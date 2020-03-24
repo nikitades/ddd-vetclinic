@@ -12,7 +12,7 @@
 
 - - -
 
-### The domain model
+### The abstract domain model
 
 * A patient
 
@@ -53,5 +53,6 @@ Description: string
 Treatment: string
 Card: Card
 StartedAt: DateTime
+Ended: bool
 EndedAt: DateTime
 ```

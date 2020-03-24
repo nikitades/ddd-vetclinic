@@ -5,6 +5,7 @@ namespace App\Domain\Patient\Entity;
 use DateTime;
 use App\Domain\Patient\Entity\Card;
 use App\Domain\Patient\ValueObject\MedicalCaseId;
+use App\Domain\Patient\ValueObject\MedicalCaseEnded;
 use App\Domain\Patient\ValueObject\MedicalCaseEndedAt;
 use App\Domain\Patient\ValueObject\MedicalCaseStartedAt;
 use App\Domain\Patient\ValueObject\MedicalCaseTreatment;
@@ -63,6 +64,18 @@ class MedicalCase
     public function getStartedAt(): MedicalCaseStartedAt
     {
         return $this->startedAt;
+    }
+
+    protected MedicalCaseEnded $ended;
+
+    public function isEnded(): MedicalCaseEnded
+    {
+        return $this->ended;
+    }
+
+    public function end(): void
+    {
+        $this->ended = new MedicalCaseEnded(true);
     }
 
     protected ?MedicalCaseEndedAt $endedAt = null;

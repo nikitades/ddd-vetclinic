@@ -111,4 +111,12 @@ class MedicalCaseTest extends TestCase
         static::assertNotNull($case->getEndedAt());
         static::assertInstanceOf(MedicalCaseEndedAt::class, $case->getEndedAt());
     }
+
+    public function testIsEnded()
+    {
+        $case = $this->createCase();
+        static::assertEquals(false, $case->isEnded()->getValue());
+        $case->end();
+        static::assertEquals(true, $case->isEnded()->getValue());
+    }
 }

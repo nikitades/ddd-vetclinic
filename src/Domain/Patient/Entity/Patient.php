@@ -74,12 +74,11 @@ class Patient
         return $this->owner;
     }
 
-    /**
-     * 
-     * имя
-     * пол
-     * возраст
-     * вид
-     * хозяин
-     */
+    public function isCured(): bool
+    {
+        $cards = $this->getCards();
+        $cases = array_map(fn ($card) => $card->getCases(), $cards);
+        foreach ($cases as $case) if (!$case->isEnded()) return false;
+        return true;
+    }
 }
