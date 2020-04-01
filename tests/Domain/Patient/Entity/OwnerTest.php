@@ -19,23 +19,25 @@ class OwnerPatientsTest extends TestCase
 {
     private function createOwner(): Owner
     {
-        return new Owner(
-            new OwnerId(35),
+        $o = new Owner(
             new OwnerName("Bubu"),
             new OwnerPhone("+79993334444"),
             new OwnerAddress("Haha benis again")
         );
+        $o->setId(new OwnerId(35));
+        return $o;
     }
 
     private function createPatient(Owner $owner, int $id = 36): Patient
     {
-        return new Patient(
-            new PatientId($id),
+        $p = new Patient(
             new PatientName("A good boy"),
             PatientBirthDate::fromString("1960-03-05"),
-            new PatientSpecies("Husky"),
-            $owner
+            new PatientSpecies("Husky")
         );
+        $p->setId(new PatientId($id));
+        $p->setOwner($owner);
+        return $p;
     }
 
     public function testGetPatients()

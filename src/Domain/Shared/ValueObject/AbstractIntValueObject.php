@@ -2,7 +2,7 @@
 
 namespace App\Domain\Shared\ValueObject;
 
-class AbstractIntValueObject
+class AbstractIntValueObject extends AbstractValueObject
 {
     private int $value;
 

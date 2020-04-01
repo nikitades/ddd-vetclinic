@@ -4,7 +4,7 @@ namespace App\Domain\Shared\ValueObject;
 
 use DateTime;
 
-class AbstractDateTimeValueObject
+class AbstractDateTimeValueObject extends AbstractValueObject
 {
     protected DateTime $value;
 

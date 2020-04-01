@@ -14,11 +14,10 @@ use App\Domain\Patient\ValueObject\MedicalCaseDescription;
 class MedicalCase
 {
 
-    public function __construct(MedicalCaseId $id, Card $card)
+    public function __construct()
     {
-        $this->id = $id;
-        $this->card = $card;
         $this->startedAt = new MedicalCaseStartedAt(new DateTime());
+        $this->ended = new MedicalCaseEnded(false);
     }
 
     protected MedicalCaseId $id;
@@ -26,6 +25,11 @@ class MedicalCase
     public function getId(): MedicalCaseId
     {
         return $this->id;
+    }
+
+    public function setId(MedicalCaseId $id): void
+    {
+        $this->id = $id;
     }
 
     protected MedicalCaseDescription $description;
@@ -57,6 +61,11 @@ class MedicalCase
     public function getCard(): Card
     {
         return $this->card;
+    }
+
+    public function setCard(Card $card): void
+    {
+        $this->card = $card;
     }
 
     protected MedicalCaseStartedAt $startedAt;

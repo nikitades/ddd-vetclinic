@@ -23,31 +23,33 @@ class CardTest extends TestCase
 {
     private function createOwner(): Owner
     {
-        return new Owner(
-            new OwnerId(35),
+        $o = new Owner(
             new OwnerName("Bubu"),
             new OwnerPhone("+79993334444"),
             new OwnerAddress("Haha benis again")
         );
+        $o->setId(new OwnerId(35));
+        return $o;
     }
 
     private function createPatient(Owner $owner, int $id = 36): Patient
     {
-        return new Patient(
-            new PatientId($id),
+        $p = new Patient(
             new PatientName("A good boy"),
             PatientBirthDate::fromString("1960-03-05"),
             new PatientSpecies("Husky"),
-            $owner
         );
+        $p->setId(new PatientId($id));
+        $p->setOwner($owner);
+        return $p;
     }
 
-    private function createCase(Card $card): MedicalCase
+    private function createCase(Card $card, $id = 364): MedicalCase
     {
-        return new MedicalCase(
-            new MedicalCaseId(364),
-            $card
-        );
+        $c = new MedicalCase();
+        $c->setId(new MedicalCaseId($id));
+        $c->setCard($card);
+        return $c;
     }
 
     public function testNewCard()
@@ -55,10 +57,9 @@ class CardTest extends TestCase
         $owner = $this->createOwner();
         $patient = $this->createPatient($owner, 77);
         $cardId = new CardId(66);
-        $card = new Card(
-            $cardId,
-            $patient
-        );
+        $card = new Card();
+        $card->setId($cardId);
+        $card->setPatient($patient);
         static::assertEquals($cardId->getValue(), $card->getId()->getValue());
         static::assertNotNull($card->getPatient());
         static::assertEquals($card->getPatient(), $patient);
@@ -136,10 +137,9 @@ class CardTest extends TestCase
     {
         $owner = $this->createOwner();
         $patient = $this->createPatient($owner);
-        $card = new Card(
-            new CardId(666),
-            $patient
-        );
+        $card = new Card();
+        $card->setId(new CardId(666));
+        $card->setPatient($patient);
 
         static::assertNotNull($card->getPatient());
         static::assertInstanceOf(Patient::class, $card->getPatient());

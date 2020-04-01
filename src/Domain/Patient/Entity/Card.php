@@ -6,15 +6,15 @@ use DateTime;
 use App\Domain\Patient\Entity\Patient;
 use App\Domain\Patient\Entity\MedicalCase;
 use App\Domain\Patient\ValueObject\CardId;
+use App\Domain\Patient\ValueObject\CardClosed;
 use App\Domain\Patient\ValueObject\CardCreatedAt;
 use App\Domain\Patient\ValueObject\MedicalCaseId;
 
 class Card
 {
-    public function __construct(CardId $id, Patient $patient)
+    public function __construct()
     {
-        $this->id = $id;
-        $this->patient = $patient;
+        $this->closed = new CardClosed(false);
         $this->createdAt = new CardCreatedAt(new DateTime());
     }
 
@@ -25,11 +25,28 @@ class Card
         return $this->id;
     }
 
+    public function setId(CardId $cardId): void
+    {
+        $this->id = $cardId;
+    }
+
+    protected CardClosed $closed;
+
+    public function getClosed(): CardClosed
+    {
+        return $this->closed;
+    }
+
     protected Patient $patient;
 
     public function getPatient(): Patient
     {
         return $this->patient;
+    }
+
+    public function setPatient(Patient $patient): void
+    {
+        $this->patient = $patient;
     }
 
     /**
@@ -49,7 +66,7 @@ class Card
 
     public function removeCase(MedicalCaseId $caseId): void
     {
-        $this->cases = array_filter($this->cases, fn ($case) => $case->getId() !== $caseId);
+        $this->cases = array_filter($this->cases, fn ($case) => !$case->getId()->equals($caseId));
     }
 
     protected CardCreatedAt $createdAt;

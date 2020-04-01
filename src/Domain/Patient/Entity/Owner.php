@@ -13,9 +13,8 @@ use App\Domain\Patient\ValueObject\OwnerRegisteredAt;
 class Owner
 {
     
-    public function __construct(OwnerId $id, OwnerName $name, OwnerPhone $phone, OwnerAddress $address)
+    public function __construct(OwnerName $name, OwnerPhone $phone, OwnerAddress $address)
     {
-        $this->id = $id;
         $this->name = $name;
         $this->phone = $phone;
         $this->address = $address;
@@ -27,6 +26,11 @@ class Owner
     public function getId(): OwnerId
     {
         return $this->id;
+    }
+
+    public function setId(OwnerId $id): void
+    {
+        $this->id = $id;
     }
 
     protected OwnerName $name;

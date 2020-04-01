@@ -28,39 +28,41 @@ class MedicalCaseTest extends TestCase
 {
     private function createOwner(): Owner
     {
-        return new Owner(
-            new OwnerId(889),
+        $o = new Owner(
             new OwnerName("Uncle Sam"),
             new OwnerPhone("+79996767676"),
             new OwnerAddress("NYC, 5th av.")
         );
+        $o->setId(new OwnerId(889));
+        return $o;
     }
 
     private function createPatient(): Patient
     {
-        return new Patient(
-            new PatientId(32),
+        $p = new Patient(
             new PatientName("Samson"),
             new PatientBirthDate((new DateTime())->sub(new DateInterval("P2Y"))),
-            new PatientSpecies("Lion"),
-            $this->createOwner()
+            new PatientSpecies("Lion")
         );
+        $p->setId(new PatientId(32));
+        $p->setOwner($this->createOwner());
+        return $p;
     }
 
     private function createCard(): Card
     {
-        return new Card(
-            new CardId(33),
-            $this->createPatient()
-        );
+        $c = new Card();
+        $c->setId(new CardId(33));
+        $c->setPatient($this->createPatient());
+        return $c;
     }
 
     private function createCase(): MedicalCase
     {
-        return new MedicalCase(
-            new MedicalCaseId(35),
-            $this->createCard()
-        );
+        $c = new MedicalCase();
+        $c->setId(new MedicalCaseId(35));
+        $c->setCard($this->createCard());
+        return $c;
     }
 
     public function testDescription()

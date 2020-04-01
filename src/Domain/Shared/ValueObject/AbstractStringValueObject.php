@@ -4,7 +4,7 @@ namespace App\Domain\Shared\ValueObject;
 
 use App\Domain\Shared\Exceptions\WrongValueException;
 
-abstract class AbstractStringValueObject
+abstract class AbstractStringValueObject extends AbstractValueObject
 {
     private string $value;
 
