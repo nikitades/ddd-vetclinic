@@ -10,6 +10,9 @@
 - The pet's owner should be able to leave the email to get the notification as soon as the pet is released
 - We want to release the patients when the treatment is done
 
+### The additional requirements:
+- We (the clinic) want to be able to check the patient's status via CLI command
+
 - - -
 
 ### The abstract domain model
