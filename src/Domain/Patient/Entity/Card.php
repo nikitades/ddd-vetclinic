@@ -19,6 +19,13 @@ class Card
     }
 
     protected CardId $id;
+    protected CardClosed $closed;
+    protected Patient $patient;
+    /**
+     * @var MedicalCase[]
+     */
+    protected array $cases = [];
+    protected CardCreatedAt $createdAt;
 
     public function getId(): CardId
     {
@@ -30,14 +37,10 @@ class Card
         $this->id = $cardId;
     }
 
-    protected CardClosed $closed;
-
     public function getClosed(): CardClosed
     {
         return $this->closed;
     }
-
-    protected Patient $patient;
 
     public function getPatient(): Patient
     {
@@ -48,11 +51,6 @@ class Card
     {
         $this->patient = $patient;
     }
-
-    /**
-     * @var MedicalCase[]
-     */
-    protected array $cases = [];
 
     public function getCases(): array
     {
@@ -68,8 +66,6 @@ class Card
     {
         $this->cases = array_filter($this->cases, fn ($case) => !$case->getId()->equals($caseId));
     }
-
-    protected CardCreatedAt $createdAt;
 
     public function getCreatedAt(): CardCreatedAt
     {

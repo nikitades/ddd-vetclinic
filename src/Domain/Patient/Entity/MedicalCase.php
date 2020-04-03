@@ -21,6 +21,12 @@ class MedicalCase
     }
 
     protected MedicalCaseId $id;
+    protected MedicalCaseDescription $description;
+    protected MedicalCaseTreatment $treatment;
+    protected Card $card;
+    protected MedicalCaseStartedAt $startedAt;
+    protected MedicalCaseEnded $ended;
+    protected ?MedicalCaseEndedAt $endedAt = null;
 
     public function getId(): MedicalCaseId
     {
@@ -32,8 +38,6 @@ class MedicalCase
         $this->id = $id;
     }
 
-    protected MedicalCaseDescription $description;
-
     public function getDescription(): MedicalCaseDescription
     {
         return $this->description;
@@ -43,8 +47,6 @@ class MedicalCase
     {
         $this->description = $value;
     }
-
-    protected MedicalCaseTreatment $treatment;
 
     public function getTreatment(): MedicalCaseTreatment
     {
@@ -56,8 +58,6 @@ class MedicalCase
         $this->treatment = $value;
     }
 
-    protected Card $card;
-
     public function getCard(): Card
     {
         return $this->card;
@@ -68,14 +68,10 @@ class MedicalCase
         $this->card = $card;
     }
 
-    protected MedicalCaseStartedAt $startedAt;
-
     public function getStartedAt(): MedicalCaseStartedAt
     {
         return $this->startedAt;
     }
-
-    protected MedicalCaseEnded $ended;
 
     public function isEnded(): MedicalCaseEnded
     {
@@ -86,8 +82,6 @@ class MedicalCase
     {
         $this->ended = new MedicalCaseEnded(true);
     }
-
-    protected ?MedicalCaseEndedAt $endedAt = null;
 
     public function getEndedAt(): ?MedicalCaseEndedAt
     {

@@ -3,7 +3,9 @@
 namespace App\Domain\Patient\Entity;
 
 use DateTime;
+use App\Framework\Entity\Owner as DBALOwner;
 use App\Domain\Patient\ValueObject\OwnerId;
+use App\Domain\Shared\Entity\IDomainEntity;
 use App\Domain\Patient\ValueObject\OwnerName;
 use App\Domain\Patient\ValueObject\PatientId;
 use App\Domain\Patient\ValueObject\OwnerPhone;
@@ -12,7 +14,6 @@ use App\Domain\Patient\ValueObject\OwnerRegisteredAt;
 
 class Owner
 {
-    
     public function __construct(OwnerName $name, OwnerPhone $phone, OwnerAddress $address)
     {
         $this->name = $name;
@@ -22,6 +23,14 @@ class Owner
     }
 
     protected OwnerId $id;
+    protected OwnerName $name;
+    protected OwnerPhone $phone;
+    protected OwnerAddress $address;
+    /**
+     * @var Patient[]
+     */
+    protected array $patients = [];
+    protected OwnerRegisteredAt $registeredAt;
 
     public function getId(): OwnerId
     {
@@ -33,31 +42,20 @@ class Owner
         $this->id = $id;
     }
 
-    protected OwnerName $name;
-
     public function getName(): OwnerName
     {
         return $this->name;
     }
-
-    protected OwnerPhone $phone;
 
     public function getPhone(): OwnerPhone
     {
         return $this->phone;
     }
 
-    protected OwnerAddress $address;
-
     public function getAddress(): OwnerAddress
     {
         return $this->address;
     }
-
-    /**
-     * @var Patient[]
-     */
-    protected array $patients = [];
 
     public function getPatients(): array
     {
@@ -73,8 +71,6 @@ class Owner
     {
         $this->patients = array_filter($this->patients, fn ($patient) => $patient->getId() !== $patientId);
     }
-
-    protected OwnerRegisteredAt $registeredAt;
 
     public function getRegisteredAt(): OwnerRegisteredAt
     {

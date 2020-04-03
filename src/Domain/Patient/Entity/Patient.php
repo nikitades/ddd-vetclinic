@@ -2,12 +2,14 @@
 
 namespace App\Domain\Patient\Entity;
 
-use App\Domain\Patient\Exception\MoreThanOneActiveCardIsNotAllowedException;
+use App\Framework\Entity\Patient as DBALPatient;
 use App\Domain\Patient\ValueObject\CardId;
+use App\Domain\Shared\Entity\IDomainEntity;
 use App\Domain\Patient\ValueObject\PatientId;
 use App\Domain\Patient\ValueObject\PatientName;
 use App\Domain\Patient\ValueObject\PatientSpecies;
 use App\Domain\Patient\ValueObject\PatientBirthDate;
+use App\Domain\Patient\Exception\MoreThanOneActiveCardIsNotAllowedException;
 
 class Patient
 {
@@ -19,6 +21,14 @@ class Patient
     }
 
     protected PatientId $id;
+    protected PatientName $name;
+    protected PatientBirthDate $birthDate;
+    protected PatientSpecies $species;
+    protected Owner $owner;
+    /**
+     * @var Card[]
+     */
+    protected array $cards = [];
 
     public function getId(): PatientId
     {
@@ -30,8 +40,6 @@ class Patient
         $this->id = $id;
     }
 
-    protected PatientName $name;
-
     public function getName(): PatientName
     {
         return $this->name;
@@ -41,8 +49,6 @@ class Patient
     {
         $this->name = $name;
     }
-
-    protected PatientBirthDate $birthDate;
 
     public function getBirthDate(): PatientBirthDate
     {
@@ -54,8 +60,6 @@ class Patient
         $this->birthDate = $patientBirthDate;
     }
 
-    protected PatientSpecies $species;
-
     public function getSpecies(): PatientSpecies
     {
         return $this->species;
@@ -65,11 +69,6 @@ class Patient
     {
         $this->species = $species;
     }
-
-    /**
-     * @var Card[]
-     */
-    protected array $cards = [];
 
     public function getCards(): array
     {
@@ -96,8 +95,6 @@ class Patient
     {
         $this->cards = array_filter($this->cards, fn ($card) => !$card->getId()->equals($cardId));
     }
-
-    protected Owner $owner;
 
     public function getOwner(): Owner
     {
