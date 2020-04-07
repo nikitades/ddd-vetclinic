@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Framework\Entity;
+namespace App\Infrastructure\Framework\Entity;
 
 use App\Infrastructure\IEntityAdapter;
 use App\Domain\Patient\ValueObject\CardId;
-use App\Framework\Entity\Card as DBALCard;
+use App\Infrastructure\Framework\Entity\Card as DBALCard;
 use App\Domain\Patient\ValueObject\OwnerId;
-use App\Framework\Entity\Owner as DBALOwner;
+use App\Infrastructure\Framework\Entity\Owner as DBALOwner;
 use App\Domain\Patient\ValueObject\OwnerName;
 use App\Domain\Patient\ValueObject\CardClosed;
 use App\Domain\Patient\ValueObject\OwnerPhone;
 use App\Domain\Patient\ValueObject\PatientName;
 use App\Domain\Patient\ValueObject\OwnerAddress;
-use App\Framework\Entity\Patient as DBALPatient;
+use App\Infrastructure\Framework\Entity\Patient as DBALPatient;
 use App\Domain\Patient\Entity\Card as DomainCard;
 use App\Domain\Patient\ValueObject\CardCreatedAt;
 use App\Domain\Patient\ValueObject\MedicalCaseId;
@@ -25,7 +25,7 @@ use App\Domain\Patient\ValueObject\MedicalCaseEndedAt;
 use App\Domain\Patient\Entity\Patient as DomainPatient;
 use App\Domain\Patient\ValueObject\MedicalCaseStartedAt;
 use App\Domain\Patient\ValueObject\MedicalCaseTreatment;
-use App\Framework\Entity\MedicalCase as DBALMedicalCase;
+use App\Infrastructure\Framework\Entity\MedicalCase as DBALMedicalCase;
 use App\Domain\Patient\ValueObject\MedicalCaseDescription;
 use App\Domain\Patient\Entity\MedicalCase as DomainMedicalCase;
 

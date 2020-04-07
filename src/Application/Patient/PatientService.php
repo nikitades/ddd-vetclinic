@@ -66,7 +66,13 @@ class PatientService
         throw new \InvalidArgumentException("No valid query parameters given (owner's name, patient's name or patient's id)");
     }
 
-    public function getAllPatients(GetAllPatientsDTO $getAllPatientsDTO)
+    /**
+     * Gets all the patients meeting the criteria
+     *
+     * @param GetAllPatientsDTO $getAllPatientsDTO
+     * @return Patient[]
+     */
+    public function getAllPatients(GetAllPatientsDTO $getAllPatientsDTO): array
     {
         return $this->patientRepo->getAllPatients($getAllPatientsDTO->onTreatment, $getAllPatientsDTO->released);
     }
@@ -93,7 +99,12 @@ class PatientService
     {
         $patient = $this->fetchPatient($releasePatientDTO->patientId, null, null, null);
         $patient->release();
-        return $this->patientRepo->updatePatient($patient);
+        $cases = array_merge(...(array_map(
+            fn ($card) => $card->getCases(),
+            $patient->getCards()
+        )));
+        $this->patientRepo->updatePatientCases($cases);
+        return $patient;
     }
 
     public function removePatient(RemovePatientDTO $removePatientDTO): void
@@ -118,7 +129,8 @@ class PatientService
         $patient = $this->fetchPatient($addCardToPatientDTO->patientId, null, null, null);
         $card = new Card();
         $patient->addCard($card);
-        return $this->patientRepo->updatePatient($patient);
+        $this->patientRepo->addCardToPatient($card);
+        return $patient;
     }
 
     public function removeCardFromPatient(RemoveCardFromPatientDTO $removeCardFromPatientDTO): Patient

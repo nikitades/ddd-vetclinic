@@ -2,9 +2,8 @@
 
 namespace App\Domain\Patient\Entity;
 
-use App\Framework\Entity\Patient as DBALPatient;
+use App\Domain\Patient\Entity\Card;
 use App\Domain\Patient\ValueObject\CardId;
-use App\Domain\Shared\Entity\IDomainEntity;
 use App\Domain\Patient\ValueObject\PatientId;
 use App\Domain\Patient\ValueObject\PatientName;
 use App\Domain\Patient\ValueObject\PatientSpecies;
@@ -70,6 +69,11 @@ class Patient
         $this->species = $species;
     }
 
+    /**
+     * Get patients' cards
+     *
+     * @return Card[]
+     */
     public function getCards(): array
     {
         return $this->cards;

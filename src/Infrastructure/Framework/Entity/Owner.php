@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Framework\Entity;
+namespace App\Infrastructure\Framework\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Framework\Entity\Patient;
+use App\Infrastructure\Framework\Entity\Patient;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @ORM\Entity(repositoryClass="App\Framework\Repository\OwnerRepository")
+ * @ORM\Entity(repositoryClass="App\Infrastructure\Framework\Repository\OwnerRepository")
  */
 class Owner
 {
@@ -40,7 +40,7 @@ class Owner
     private $registeredAt;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Framework\Entity\Patient", mappedBy="owner")
+     * @ORM\OneToMany(targetEntity="App\Infrastructure\Framework\Entity\Patient", mappedBy="owner")
      */
     private $patients;
 

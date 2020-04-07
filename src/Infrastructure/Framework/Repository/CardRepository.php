@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Framework\Repository;
+namespace App\Infrastructure\Framework\Repository;
 
-use App\Framework\Entity\Card;
+use App\Infrastructure\Framework\Entity\Card;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @method Card|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,9 +15,20 @@ use Doctrine\Common\Persistence\ManagerRegistry;
  */
 class CardRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private EntityManagerInterface $manager;
+
+    public function __construct(
+        ManagerRegistry $registry,
+        EntityManagerInterface $entityManager)
     {
         parent::__construct($registry, Card::class);
+        $this->manager = $entityManager;
+    }
+
+    public function create(Card $card)
+    {
+        $this->manager->persist($card);
+        $this->manager->flush();
     }
 
     // /**

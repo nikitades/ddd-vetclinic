@@ -1,2 +1,2 @@
 maker:
-  root_namespace: 'App\Framework'
+  root_namespace: 'App\Infrastructure\Framework'

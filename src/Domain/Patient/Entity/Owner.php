@@ -3,9 +3,7 @@
 namespace App\Domain\Patient\Entity;
 
 use DateTime;
-use App\Framework\Entity\Owner as DBALOwner;
 use App\Domain\Patient\ValueObject\OwnerId;
-use App\Domain\Shared\Entity\IDomainEntity;
 use App\Domain\Patient\ValueObject\OwnerName;
 use App\Domain\Patient\ValueObject\PatientId;
 use App\Domain\Patient\ValueObject\OwnerPhone;

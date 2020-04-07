@@ -52,6 +52,11 @@ class Card
         $this->patient = $patient;
     }
 
+    /**
+     * Get cases contained in this card
+     *
+     * @return MedicalCase[]
+     */
     public function getCases(): array
     {
         return $this->cases;

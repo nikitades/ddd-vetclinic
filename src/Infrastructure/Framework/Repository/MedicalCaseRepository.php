@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Framework\Repository;
+namespace App\Infrastructure\Framework\Repository;
 
-use App\Framework\Entity\MedicalCase;
+use App\Infrastructure\Framework\Entity\MedicalCase;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @method MedicalCase|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,9 +15,26 @@ use Doctrine\Common\Persistence\ManagerRegistry;
  */
 class MedicalCaseRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private EntityManagerInterface $entityManagerInterface;
+
+    public function __construct(
+        ManagerRegistry $registry,
+        EntityManagerInterface $entityManagerInterface
+        )
     {
         parent::__construct($registry, MedicalCase::class);
+        $this->entityManagerInterface = $entityManagerInterface;
+    }
+
+    /**
+     * Updates given medical cases in the DB
+     *
+     * @param MedicalCase[] $cases
+     * @return void
+     */
+    public function updateCases(array $cases)
+    {
+        $this->entityManagerInterface->flush();
     }
 
     // /**

@@ -2,15 +2,14 @@
 
 namespace App\Infrastructure;
 
-use App\Framework\Entity\Card as DBALCard;
-use App\Framework\Entity\Owner as DBALOwner;
-use App\Framework\Entity\Patient as DBALPatient;
+use App\Infrastructure\Framework\Entity\Card as DBALCard;
+use App\Infrastructure\Framework\Entity\Owner as DBALOwner;
+use App\Infrastructure\Framework\Entity\Patient as DBALPatient;
 use App\Domain\Patient\Entity\Card as DomainCard;
 use App\Domain\Patient\Entity\Owner as DomainOwner;
 use App\Domain\Patient\Entity\Patient as DomainPatient;
-use App\Framework\Entity\MedicalCase as DBALMedicalCase;
+use App\Infrastructure\Framework\Entity\MedicalCase as DBALMedicalCase;
 use App\Domain\Patient\Entity\MedicalCase as DomainMedicalCase;
-
 
 interface IEntityAdapter
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Framework\Entity;
+namespace App\Infrastructure\Framework\Entity;
 
-use App\Framework\Entity\Card;
+use App\Infrastructure\Framework\Entity\Card;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\Framework\Entity\PatientRepository")
+ * @ORM\Entity(repositoryClass="App\Infrastructure\Framework\Entity\PatientRepository")
  */
 class Patient
 {
@@ -34,13 +34,13 @@ class Patient
     private $species;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Framework\Entity\Owner", inversedBy="patients")
+     * @ORM\ManyToOne(targetEntity="App\Infrastructure\Framework\Entity\Owner", inversedBy="patients")
      * @ORM\JoinColumn(nullable=true)
      */
     private $owner;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Framework\Entity\Card", mappedBy="patient")
+     * @ORM\OneToMany(targetEntity="App\Infrastructure\Framework\Entity\Card", mappedBy="patient")
      */
     private $cards;
 

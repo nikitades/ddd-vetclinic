@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Framework\Entity;
+namespace App\Infrastructure\Framework\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Framework\Entity\MedicalCase;
+use App\Infrastructure\Framework\Entity\MedicalCase;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @ORM\Entity(repositoryClass="App\Framework\Repository\CardRepository")
+ * @ORM\Entity(repositoryClass="App\Infrastructure\Framework\Repository\CardRepository")
  */
 class Card
 {
@@ -30,13 +30,13 @@ class Card
     private $createdAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Framework\Entity\Patient", inversedBy="cards")
+     * @ORM\ManyToOne(targetEntity="App\Infrastructure\Framework\Entity\Patient", inversedBy="cards")
      * @ORM\JoinColumn(nullable=false)
      */
     private $patient;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Framework\Entity\MedicalCase", mappedBy="card")
+     * @ORM\OneToMany(targetEntity="App\Infrastructure\Framework\Entity\MedicalCase", mappedBy="card")
      */
     private $cases;
 

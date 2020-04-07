@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Framework\Entity;
+namespace App\Infrastructure\Framework\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Framework\Repository\MedicalCaseRepository")
+ * @ORM\Entity(repositoryClass="App\Infrastructure\Framework\Repository\MedicalCaseRepository")
  */
 class MedicalCase
 {
@@ -42,7 +42,7 @@ class MedicalCase
     private $ended;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Framework\Entity\Card", inversedBy="cases")
+     * @ORM\ManyToOne(targetEntity="App\Infrastructure\Framework\Entity\Card", inversedBy="cases")
      * @ORM\JoinColumn(nullable=false)
      */
     private $card;

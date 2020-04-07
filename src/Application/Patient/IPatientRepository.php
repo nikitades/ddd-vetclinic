@@ -2,12 +2,15 @@
 
 namespace App\Application\Patient;
 
+use App\Domain\Patient\Entity\Card;
 use App\Domain\Patient\Entity\Owner;
 use App\Domain\Patient\Entity\Patient;
+use App\Domain\Patient\Entity\MedicalCase;
 
 interface IPatientRepository
 {
-    public function addPatientToOwner(Patient $patient, Owner $owner);
+    public function addPatientToOwner(Patient $patient, Owner $owner): void;
+    public function addCardToPatient(Card $card): void;
 
     public function getPatientByNameAndOwnerName(string $patientName, string $ownerName): ?Patient;
     public function getPatientByNameAndOwnerId(string $patientName, int $ownerId): ?Patient;
@@ -20,6 +23,18 @@ interface IPatientRepository
     public function getAllPatients($onTreatment = true, $released = true): array;
 
     public function updatePatient(Patient $patient): Patient;
+    
+    /**
+     * @param Card[] $cards
+     * @return Card[]
+     */
+    public function updatePatientCards(array $cards): array;
+
+    /**
+     * @param MedicalCase[] $cases
+     * @return MedicalCase[]
+     */
+    public function updatePatientCases(array $cases): array;
 
     public function removePatientByNameAndOwnerName(string $patientName, string $ownerName): void;
     public function removePatientByNameAndOwnerId(string $patientName, int $ownerId): void;
