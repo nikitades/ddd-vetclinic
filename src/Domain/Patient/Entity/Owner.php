@@ -9,6 +9,7 @@ use App\Domain\Patient\ValueObject\PatientId;
 use App\Domain\Patient\ValueObject\OwnerPhone;
 use App\Domain\Patient\ValueObject\OwnerAddress;
 use App\Domain\Patient\ValueObject\OwnerRegisteredAt;
+use App\Infrastructure\Framework\Repository\OwnerRepository;
 
 class Owner
 {
@@ -55,9 +56,25 @@ class Owner
         return $this->address;
     }
 
+    /**
+     * Provides the patients list
+     *
+     * @return Patient[]
+     */
     public function getPatients(): array
     {
         return $this->patients;
+    }
+
+    /**
+     * Sets patients equal to the given list
+     *
+     * @param Patient[] $patients
+     * @return void
+     */
+    public function setPatients(array $patients): void
+    {
+        $this->patients = $patients;
     }
 
     public function addPatient(Patient $patient): void
@@ -73,5 +90,10 @@ class Owner
     public function getRegisteredAt(): OwnerRegisteredAt
     {
         return $this->registeredAt;
+    }
+
+    public function setRegisteredAt(OwnerRegisteredAt $value): void
+    {
+        $this->registeredAt = $value;
     }
 }

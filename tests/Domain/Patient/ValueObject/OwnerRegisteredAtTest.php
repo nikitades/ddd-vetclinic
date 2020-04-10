@@ -11,12 +11,12 @@ class OwnerRegisteredAtTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testTooEarlyDate()
+    public function testTooEarlyDate(): void
     {
         new OwnerRegisteredAt((new DateTime())->setTimestamp(time() + 86400));
     }
 
-    public function testCorrectDate()
+    public function testCorrectDate(): void
     {
         $date = new DateTime();
         $orat = new OwnerRegisteredAt($date);

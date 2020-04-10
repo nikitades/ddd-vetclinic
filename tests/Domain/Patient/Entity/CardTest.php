@@ -44,7 +44,7 @@ class CardTest extends TestCase
         return $p;
     }
 
-    private function createCase(Card $card, $id = 364): MedicalCase
+    private function createCase(Card $card, int $id = 364): MedicalCase
     {
         $c = new MedicalCase();
         $c->setId(new MedicalCaseId($id));
@@ -52,7 +52,7 @@ class CardTest extends TestCase
         return $c;
     }
 
-    public function testNewCard()
+    public function testNewCard(): void
     {
         $owner = $this->createOwner();
         $patient = $this->createPatient($owner, 77);
@@ -65,15 +65,12 @@ class CardTest extends TestCase
         static::assertEquals($card->getPatient(), $patient);
     }
 
-    public function testAddCase()
+    public function testAddCase(): void
     {
         $owner = $this->createOwner();
         $patient = $this->createPatient($owner, 741);
 
-        $card = new Card(
-            new CardId(35),
-            $patient
-        );
+        $card = new Card();
 
         static::assertIsArray($card->getCases());
         static::assertEmpty($card->getCases());
@@ -83,15 +80,12 @@ class CardTest extends TestCase
         static::assertCount(1, $card->getCases());
     }
 
-    public function testRemoveCase()
+    public function testRemoveCase(): void
     {
         $owner = $this->createOwner();
         $patient = $this->createPatient($owner);
 
-        $card = new Card(
-            new CardId(35),
-            $patient
-        );
+        $card = new Card();
 
         $case1 = $this->createCase($card, 345);
         $case2 = $this->createCase($card, 453);
@@ -111,15 +105,12 @@ class CardTest extends TestCase
         static::assertEquals($newCases[1]->getId(), $case3->getId());
     }
 
-    public function testGetCases()
+    public function testGetCases(): void
     {
         $owner = $this->createOwner();
         $patient = $this->createPatient($owner);
 
-        $card = new Card(
-            new CardId(35),
-            $patient
-        );
+        $card = new Card();
 
         $case1 = $this->createCase($card, 345);
         $case2 = $this->createCase($card, 453);
@@ -133,7 +124,7 @@ class CardTest extends TestCase
         static::assertCount(3, $card->getCases());
     }
 
-    public function testGetPatient()
+    public function testGetPatient(): void
     {
         $owner = $this->createOwner();
         $patient = $this->createPatient($owner);
@@ -146,15 +137,12 @@ class CardTest extends TestCase
         static::assertGreaterThan(0, $card->getPatient()->getId()->getValue());
     }
 
-    public function testGetCreatedAt()
+    public function testGetCreatedAt(): void
     {
 
         $owner = $this->createOwner();
         $patient = $this->createPatient($owner);
-        $card = new Card(
-            new CardId(666),
-            $patient
-        );
+        $card = new Card();
 
         static::assertNotNull($card->getCreatedAt());
         static::assertInstanceOf(CardCreatedAt::class, $card->getCreatedAt());

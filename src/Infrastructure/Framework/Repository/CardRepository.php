@@ -25,7 +25,7 @@ class CardRepository extends ServiceEntityRepository
         $this->manager = $entityManager;
     }
 
-    public function create(Card $card)
+    public function create(Card $card): void
     {
         $this->manager->persist($card);
         $this->manager->flush();

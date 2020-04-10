@@ -10,12 +10,12 @@ class MedicalCaseDescriptionTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testEmptyDescription()
+    public function testEmptyDescription(): void
     {
         new MedicalCaseDescription("");
     }
 
-    public function testCorrectDescription()
+    public function testCorrectDescription(): void
     {
         $text = "Nu tam eto koroche";
         $mcd = new MedicalCaseDescription($text);

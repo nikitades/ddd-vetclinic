@@ -39,7 +39,11 @@ class Card
 
     public function getClosed(): CardClosed
     {
-        return $this->closed;
+        /** @var MedicalCase $case */
+        foreach ($this->cases as $case) {
+            if (!$case->isEnded()->getValue()) return CardClosed::unclosed();
+        }
+        return CardClosed::closed();
     }
 
     public function getPatient(): Patient
@@ -62,18 +66,38 @@ class Card
         return $this->cases;
     }
 
+    /**
+     * Sets cases equal to the given list
+     *
+     * @param MedicalCase[] $cases
+     * @return void
+     */
+    public function setCases(array $cases): void
+    {
+        $this->cases = $cases;
+    }
+
     public function addCase(MedicalCase $case): void
     {
+        $case->setCard($this);
         $this->cases[] = $case;
     }
 
     public function removeCase(MedicalCaseId $caseId): void
     {
-        $this->cases = array_filter($this->cases, fn ($case) => !$case->getId()->equals($caseId));
+        $this->cases = array_filter(
+            $this->cases,
+            fn ($case) => !$case->getId()->equals($caseId)
+        );
     }
 
     public function getCreatedAt(): CardCreatedAt
     {
         return $this->createdAt;
+    }
+
+    public function setCreatedAt(CardCreatedAt $value): void
+    {
+        $this->createdAt = $value;
     }
 }

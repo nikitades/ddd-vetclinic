@@ -7,14 +7,14 @@ use PHPUnit\Framework\TestCase;
 
 class CardClosedTest extends TestCase
 {
-    public function testNewCardClosed()
+    public function testNewCardClosed(): void
     {
         $cc = new CardClosed(false);
         static::assertNotNull($cc);
         static::assertInstanceOf(CardClosed::class, $cc);
     }
 
-    public function testClosed()
+    public function testClosed(): void
     {
         $cc = CardClosed::closed();
         static::assertNotNull($cc);
@@ -22,7 +22,7 @@ class CardClosedTest extends TestCase
         static::assertTrue($cc->getValue());
     }
 
-    public function testUnlosed()
+    public function testUnlosed(): void
     {
         $cc = CardClosed::unclosed();
         static::assertNotNull($cc);

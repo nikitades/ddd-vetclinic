@@ -11,12 +11,12 @@ class MedicalCaseTreatmentTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testEmptyTreatment()
+    public function testEmptyTreatment(): void
     {
         new MedicalCaseTreatment("");
     }
 
-    public function testCorrectTreatment()
+    public function testCorrectTreatment(): void
     {
         $text = "Vi normalniy";
         $treatment = new MedicalCaseTreatment($text);

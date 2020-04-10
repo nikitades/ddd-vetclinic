@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Test\Application;
+namespace App\Test\Application\Patient;
 
 use DateTime;
 use PHPUnit\Framework\TestCase;
@@ -29,7 +29,9 @@ use App\Application\Patient\DTO\RemoveCardFromPatientDTO;
 use App\Application\Patient\DTO\AddMedicalCaseToPatientDTO;
 use App\Application\Patient\DTO\CloseMedicalCaseDTO;
 use App\Application\Patient\DTO\RemoveMedicalCaseFromPatientDTO;
+use App\Domain\Patient\ValueObject\MedicalCaseDescription;
 use App\Domain\Patient\ValueObject\MedicalCaseId;
+use App\Domain\Patient\ValueObject\MedicalCaseTreatment;
 
 class PatientServiceTest extends TestCase
 {
@@ -75,10 +77,12 @@ class PatientServiceTest extends TestCase
         $this->patient1->setId(new PatientId(55));
         $card1 = new Card();
         $card1->setId(new CardId(666));
+        $case = new MedicalCase();
+        $case->setId(new MedicalCaseId(4392));
+        $case->setDescription(new MedicalCaseDescription("hoho"));
+        $case->setTreatment(new MedicalCaseTreatment("huhu"));
+        $card1->addCase($case);
         $this->patient1->addCard($card1);
-        $case1 = new MedicalCase();
-        $case1->setId(new MedicalCaseId(8348));
-        $this->patient1->getCurrentCard()->addCase($case1);
 
         $this->patient2 = new Patient(
             new PatientName("Boulevard"),
@@ -97,8 +101,9 @@ class PatientServiceTest extends TestCase
         $this->patient3->setId(new PatientId(999));
     }
 
-    private function createPatientService(bool $pegasusDeleted = false)
+    private function createPatientService(bool $pegasusDeleted = false): PatientService
     {
+        /** @var mixed */
         $patientRepo = $this->createMock(IPatientRepository::class);
 
         $patientRepo
@@ -154,7 +159,7 @@ class PatientServiceTest extends TestCase
         );
     }
 
-    public function testGetAllPatients()
+    public function testGetAllPatients(): void
     {
         $patientService = $this->createPatientService();
         $getAllPatientsDTO = new GetAllPatientsDTO();
@@ -164,7 +169,7 @@ class PatientServiceTest extends TestCase
         static::assertContainsOnly(Patient::class, $allPatients);
     }
 
-    public function testGetAllPatientsOnTreatment()
+    public function testGetAllPatientsOnTreatment(): void
     {
         $patientService = $this->createPatientService();
 
@@ -187,6 +192,7 @@ class PatientServiceTest extends TestCase
         $getPatientDTO->patientName = $patient2->getName()->getValue();
         $unreleasedPatient = $patientService->getPatient($getPatientDTO);
         static::assertNotNull($unreleasedPatient);
+        if (empty($unreleasedPatient)) return;
 
         $releasePatientDTO = new ReleasePatientDTO(
             $unreleasedPatient->getId()->getValue()
@@ -201,7 +207,7 @@ class PatientServiceTest extends TestCase
         static::assertContains($patient2->getName()->getValue(), $allPetsNames);
     }
 
-    public function testGetAllReleasedPatients()
+    public function testGetAllReleasedPatients(): void
     {
         $patientService = $this->createPatientService();
 
@@ -224,6 +230,7 @@ class PatientServiceTest extends TestCase
         $getPatientDTO->patientName = $patient2->getName()->getValue();
         $unreleasedPatient = $patientService->getPatient($getPatientDTO);
         static::assertNotNull($unreleasedPatient);
+        if (empty($unreleasedPatient)) return;
 
         $releasePatientDTO = new ReleasePatientDTO(
             $unreleasedPatient->getId()->getValue()
@@ -239,7 +246,7 @@ class PatientServiceTest extends TestCase
         static::assertContains($patient3->getName()->getValue(), $allPetsNames);
     }
 
-    public function testAddAndGetPatient()
+    public function testAddAndGetPatient(): void
     {
         $patientService = $this->createPatientService();
 
@@ -257,13 +264,14 @@ class PatientServiceTest extends TestCase
 
         $patient = $patientService->getPatient($getPatientDTO);
         static::assertNotNull($patient);
+        if (empty($patient)) return;
         static::assertInstanceOf(Patient::class, $patient);
         static::assertEquals($dogName, $patient->getName()->getValue());
         static::assertEquals($dogSpecies, $patient->getSpecies()->getValue());
         static::assertEquals($dogBirthDate, $patient->getBirthDate()->getValue()->format("Y-m-d"));
     }
 
-    public function testDeletePatient()
+    public function testDeletePatient(): void
     {
         $patientService = $this->createPatientService();
 
@@ -294,7 +302,7 @@ class PatientServiceTest extends TestCase
         static::assertNotContains($dogName, $allPatientsNames);
     }
 
-    public function testAddCardToPatient()
+    public function testAddCardToPatient(): void
     {
         $patientService = $this->createPatientService();
         $addCardToPatientDTO = new AddCardToPatientDTO();
@@ -303,13 +311,15 @@ class PatientServiceTest extends TestCase
         $getPatientDTO = new GetPatientDTO();
         $getPatientDTO->patientId = $this->patient2->getId()->getValue();
         $patient = $patientService->getPatient($getPatientDTO);
+        static::assertNotNull($patient);
         static::assertInstanceOf(Patient::class, $patient);
+        if (empty($patient)) return;
         $card = $patient->getCurrentCard();
         static::assertNotNull($card);
         static::assertInstanceOf(Card::class, $card);
     }
 
-    public function testRemoveCardFromPatient()
+    public function testRemoveCardFromPatient(): void
     {
         $patientService = $this->createPatientService();
 
@@ -317,28 +327,41 @@ class PatientServiceTest extends TestCase
         $getPatientDTO->patientId = $this->patient1->getId()->getValue();
         $patient = $patientService->getPatient($getPatientDTO);
         static::assertInstanceOf(Patient::class, $patient);
+        static::assertNotNull($patient);
+        if (empty($patient)) return;
         $card = $patient->getCurrentCard();
         static::assertNotNull($card);
         static::assertInstanceOf(Card::class, $card);
+        if (empty($card)) return;
 
         $removeCardFromPatientDTO = new RemoveCardFromPatientDTO();
         $removeCardFromPatientDTO->patientId = $patient->getId()->getValue();
         $removeCardFromPatientDTO->cardId = $card->getId()->getValue();
 
         $patientService->removeCardFromPatient($removeCardFromPatientDTO);
-        
+
         $patient = $patientService->getPatient($getPatientDTO);
+        static::assertNotNull($patient);
+        static::assertInstanceOf(Patient::class, $patient);
+        if (empty($patient)) return;
         static::assertNull($patient->getCurrentCard());
     }
 
-    public function testAddMedicalCaseToPatient()
+    public function testAddMedicalCaseToPatient(): void
     {
         $patientService = $this->createPatientService();
 
         $getPatientDTO = new GetPatientDTO();
         $getPatientDTO->patientId = $this->patient1->getId()->getValue();
         $patient = $patientService->getPatient($getPatientDTO);
-        static::assertCount(1, $patient->getCurrentCard()->getCases());
+        static::assertNotNull($patient);
+        static::assertInstanceOf(Patient::class, $patient);
+        if (empty($patient)) return;
+        $card = $patient->getCurrentCard();
+        static::assertNotNull($card);
+        static::assertInstanceOf(Card::class, $card);
+        if (empty($card)) return;
+        static::assertCount(1, $card->getCases());
 
         $caseDesc = "Haha what a chonk";
         $caseTreatment = "Make him go joggin twice a day";
@@ -350,19 +373,33 @@ class PatientServiceTest extends TestCase
         $patientService->addMedicalCaseToPatient($addMedicalCaseToPatientDTO);
 
         $patient = $patientService->getPatient($getPatientDTO);
-        static::assertCount(2, $patient->getCurrentCard()->getCases());
+        static::assertNotNull($patient);
+        static::assertInstanceOf(Patient::class, $patient);
+        if (empty($patient)) return;
+        $card = $patient->getCurrentCard();
+        static::assertNotNull($card);
+        static::assertInstanceOf(Card::class, $card);
+        if (empty($card)) return;
+        static::assertCount(2, $card->getCases());
     }
 
-    public function testRemoveMedicalCaseFromPatient()
+    public function testRemoveMedicalCaseFromPatient(): void
     {
         $patientService = $this->createPatientService();
 
         $getPatientDTO = new GetPatientDTO();
         $getPatientDTO->patientId = $this->patient1->getId()->getValue();
         $patient = $patientService->getPatient($getPatientDTO);
-        static::assertCount(1, $patient->getCurrentCard()->getCases());
+        static::assertNotNull($patient);
+        static::assertInstanceOf(Patient::class, $patient);
+        if (empty($patient)) return;
+        $card = $patient->getCurrentCard();
+        static::assertNotNull($card);
+        static::assertInstanceOf(Card::class, $card);
+        if (empty($card)) return;
+        static::assertCount(1, $card->getCases());
         /** @var MedicalCase */
-        $case = $patient->getCurrentCard()->getCases()[0];
+        $case = $card->getCases()[0];
 
         $removeMedicalCaseFromPatientDTO = new RemoveMedicalCaseFromPatientDTO();
         $removeMedicalCaseFromPatientDTO->patientId = $this->patient1->getId()->getValue();
@@ -370,19 +407,33 @@ class PatientServiceTest extends TestCase
         $patientService->removeMedicalCaseFromPatient($removeMedicalCaseFromPatientDTO);
 
         $patient = $patientService->getPatient($getPatientDTO);
-        static::assertEmpty($patient->getCurrentCard()->getCases());
+        static::assertNotNull($patient);
+        static::assertInstanceOf(Patient::class, $patient);
+        if (empty($patient)) return;
+        $card = $patient->getCurrentCard();
+        static::assertNotNull($card);
+        static::assertInstanceOf(Card::class, $card);
+        if (empty($card)) return;
+        static::assertEmpty($card->getCases());
     }
 
-    public function closePatientsMedicalCase()
+    public function closePatientsMedicalCase(): void
     {
         $patientService = $this->createPatientService();
 
         $getPatientDTO = new GetPatientDTO();
         $getPatientDTO->patientId = $this->patient1->getId()->getValue();
         $patient = $patientService->getPatient($getPatientDTO);
-        static::assertCount(1, $patient->getCurrentCard()->getCases());
+        static::assertNotNull($patient);
+        static::assertInstanceOf(Patient::class, $patient);
+        if (empty($patient)) return;
+        $card = $patient->getCurrentCard();
+        static::assertNotNull($card);
+        static::assertInstanceOf(Card::class, $card);
+        if (empty($card)) return;
+        static::assertCount(1, $card->getCases());
         /** @var MedicalCase */
-        $case = $patient->getCurrentCard()->getCases()[0];
+        $case = $card->getCases()[0];
         static::assertFalse($case->isEnded());
 
         $closeMedicalCaseDTO = new CloseMedicalCaseDTO();
@@ -392,11 +443,18 @@ class PatientServiceTest extends TestCase
         $patientService->closePatientsMedicalCase($closeMedicalCaseDTO);
 
         $patient = $patientService->getPatient($getPatientDTO);
+        static::assertNotNull($patient);
+        static::assertInstanceOf(Patient::class, $patient);
+        if (empty($patient)) return;
+        $card = $patient->getCurrentCard();
+        static::assertNotNull($card);
+        static::assertInstanceOf(Card::class, $card);
+        if (empty($card)) return;
         /** @var MedicalCase[] */
-        $cases = $patient->getCurrentCard()->getCases();
+        $cases = $card->getCases();
         static::assertCount(1, $cases);
         /** @var MedicalCase */
-        $case = $patient->getCurrentCard()->getCases()[0];
+        $case = $card->getCases()[0];
         static::assertTrue($case->isEnded());
     }
 }

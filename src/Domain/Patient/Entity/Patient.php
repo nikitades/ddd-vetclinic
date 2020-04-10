@@ -9,6 +9,8 @@ use App\Domain\Patient\ValueObject\PatientName;
 use App\Domain\Patient\ValueObject\PatientSpecies;
 use App\Domain\Patient\ValueObject\PatientBirthDate;
 use App\Domain\Patient\Exception\MoreThanOneActiveCardIsNotAllowedException;
+use App\Domain\Patient\Exception\NoPatientCardsFoundException;
+use Exception;
 
 class Patient
 {
@@ -79,15 +81,43 @@ class Patient
         return $this->cards;
     }
 
+    /**
+     * Sets cards equal to the given list
+     *
+     * @param Card[] $cards
+     * @return void
+     */
+    public function setCards(array $cards): void
+    {
+        $this->cards = $cards;
+    }
+
     public function getCurrentCard(): ?Card
     {
-        $cards = array_filter($this->cards, fn ($card) => !$card->getClosed()->getValue());
-        return $cards[0] ?? null;
+        if (empty($this->cards)) return null;
+
+        $notEmptyCards = array_filter($this->cards, fn ($card) => !$card->getClosed()->getValue());
+        if (!empty($notEmptyCards)) return $notEmptyCards[0];
+
+        /** @var Card */
+        $latestCard = $this->cards[0];
+
+        foreach ($this->cards as $card) {
+            if ($card->getCreatedAt()->getValue() > $latestCard->getCreatedAt()->getValue()) $latestCard = $card;
+        }
+
+        return $latestCard;
     }
 
     public function addCard(Card $card): void
     {
-        $currentCard = $this->getCurrentCard();
+        try {
+            $currentCard = $this->getCurrentCard();
+        } catch (NoPatientCardsFoundException $e) {
+            $currentCard = null;
+        } catch (Exception $e) {
+            throw $e;
+        }
         if ($currentCard) {
             throw new MoreThanOneActiveCardIsNotAllowedException($this->name->getValue());
         }
@@ -113,11 +143,11 @@ class Patient
     public function isCured(): bool
     {
         /**
-         * @var Card
+         * @var Card $card
          */
         foreach ($this->getCards() as $card) {
             foreach ($card->getCases() as $case) {
-                if (!$case->isEnded()) return false;
+                if (!$case->isEnded()->getValue()) return false;
             }
         }
         return true;
@@ -126,7 +156,7 @@ class Patient
     public function release(): void
     {
         /**
-         * @var Card
+         * @var Card $card
          */
         foreach ($this->getCards() as $card) {
             foreach ($card->getCases() as $case) {

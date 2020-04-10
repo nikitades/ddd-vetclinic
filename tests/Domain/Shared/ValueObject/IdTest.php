@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Test\Domain\Patient\ValueObject;
+namespace App\Test\Domain\Shared\ValueObject;
 
 use PHPUnit\Framework\TestCase;
 use App\Domain\Patient\ValueObject\PatientId;
 
 class IdTest extends TestCase
 {
-    public function testFromString()
+    public function testFromString(): void
     {
         $id = 543;
         $Pid = PatientID::fromInt($id);

@@ -2,13 +2,11 @@
 
 namespace App\Domain\Shared\ValueObject;
 
-use App\Domain\Shared\Exceptions\WrongValueException;
-
-abstract class AbstractStringValueObject extends AbstractValueObject
+abstract class AbstractStringValueObject
 {
-    private string $value;
+    protected string $value;
 
-    public function __construct(string $value)
+    public final function __construct(string $value)
     {
         $this->check($value);
         $this->value = $value;
@@ -17,6 +15,11 @@ abstract class AbstractStringValueObject extends AbstractValueObject
     public function getValue(): string
     {
         return $this->value;
+    }
+
+    public function equals(self $anotherObject): bool
+    {
+        return $this->value === $anotherObject->value;
     }
 
     protected function check(string $value): void

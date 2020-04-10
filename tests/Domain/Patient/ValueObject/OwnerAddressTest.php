@@ -10,12 +10,12 @@ class OwnerAddressTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testTooShortAddress()
+    public function testTooShortAddress(): void
     {
         new OwnerAddress("");
     }
 
-    public function testCorrectAddress()
+    public function testCorrectAddress(): void
     {
         $addr = "улица Пушкина, панельки панельки";
         $oa = new OwnerAddress($addr);

@@ -73,6 +73,11 @@ class MedicalCase
         return $this->startedAt;
     }
 
+    public function setStartedAt(MedicalCaseStartedAt $value): void
+    {
+        $this->startedAt = $value;
+    }
+
     public function isEnded(): MedicalCaseEnded
     {
         return $this->ended;

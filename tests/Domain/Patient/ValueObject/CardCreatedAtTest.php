@@ -11,19 +11,19 @@ class CardCreatedAtTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testNegativeDate()
+    public function testNegativeDate(): void
     {
         $cca = new CardCreatedAt(new DateTime(date("Y-m-d H:i:s", time() + 86400)));
     }
 
-    public function testDifferentDates()
+    public function testDifferentDates(): void
     {
         static::assertInstanceOf(CardCreatedAt::class, new CardCreatedAt(new DateTime(date("Y-m-d", time()))));
         static::assertInstanceOf(CardCreatedAt::class, new CardCreatedAt(new DateTime(date("Y-m-d", time() - 500000))));
         static::assertInstanceOf(CardCreatedAt::class, new CardCreatedAt(new DateTime(date("Y-m-d", 0))));
     }
 
-    public function testCorrectDate()
+    public function testCorrectDate(): void
     {
         $cca = CardCreatedAt::fromString(date("Y-m-d", time() - 86400 * 90));
         static::assertInstanceOf(CardCreatedAt::class, $cca);

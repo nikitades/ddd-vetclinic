@@ -11,12 +11,12 @@ class MedicalCaseStartedAtTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testEarlyStartedAt()
+    public function testEarlyStartedAt(): void
     {
         new MedicalCaseStartedAt((new DateTime())->setTimestamp(time() + 86400));
     }
 
-    public function testCorrectStartedAt()
+    public function testCorrectStartedAt(): void
     {
         $date = new DateTime();
         $mcsa = new MedicalCaseStartedAt($date);

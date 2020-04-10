@@ -13,19 +13,19 @@ class PatientBirthDateTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testNegativeAge()
+    public function testNegativeAge(): void
     {
         $pa = new PatientBirthDate(new DateTime(date("Y-m-d", time() + 86400)));
     }
 
-    public function testDifferentAges()
+    public function testDifferentAges(): void
     {
         static::assertInstanceOf(PatientBirthDate::class, new PatientBirthDate(new DateTime(date("Y-m-d", time()))));
         static::assertInstanceOf(PatientBirthDate::class, new PatientBirthDate(new DateTime(date("Y-m-d", time() - 500000))));
         static::assertInstanceOf(PatientBirthDate::class, new PatientBirthDate(new DateTime(date("Y-m-d", 0))));
     }
 
-    public function testCorrectAge()
+    public function testCorrectAge(): void
     {
         $date = (new DateTime())->setTimestamp(time() - 86400 * 365 * 4); //four years
         $pa = new PatientBirthDate($date);

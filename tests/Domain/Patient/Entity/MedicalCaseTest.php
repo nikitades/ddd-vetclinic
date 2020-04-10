@@ -65,7 +65,7 @@ class MedicalCaseTest extends TestCase
         return $c;
     }
 
-    public function testDescription()
+    public function testDescription(): void
     {
         $case = $this->createCase();
         static::assertInstanceOf(MedicalCase::class, $case);
@@ -76,7 +76,7 @@ class MedicalCaseTest extends TestCase
         static::assertEquals($mcd, $case->getDescription());
     }
 
-    public function testTreatment()
+    public function testTreatment(): void
     {
         $case = $this->createCase();
         static::assertInstanceOf(MedicalCase::class, $case);
@@ -87,7 +87,7 @@ class MedicalCaseTest extends TestCase
         static::assertEquals($mct, $case->getTreatment());
     }
 
-    public function testGetCard()
+    public function testGetCard(): void
     {
         $case = $this->createCase();
         static::assertNotNull($case->getCard());
@@ -98,14 +98,14 @@ class MedicalCaseTest extends TestCase
         static::assertNotEmpty($case->getCard()->getPatient()->getOwner()->getName());
     }
 
-    public function testGetStartedAt()
+    public function testGetStartedAt(): void
     {
         $case = $this->createCase();
         static::assertNotNull($case->getStartedAt());
         static::assertInstanceOf(MedicalCaseStartedAt::class, $case->getStartedAt());
     }
 
-    public function testGetEndedAt()
+    public function testGetEndedAt(): void
     {
         $case = $this->createCase();
         static::assertNull($case->getEndedAt());
@@ -114,7 +114,7 @@ class MedicalCaseTest extends TestCase
         static::assertInstanceOf(MedicalCaseEndedAt::class, $case->getEndedAt());
     }
 
-    public function testIsEnded()
+    public function testIsEnded(): void
     {
         $case = $this->createCase();
         static::assertEquals(false, $case->isEnded()->getValue());

@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Framework\Entity;
 
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -14,42 +15,49 @@ class MedicalCase
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=2000)
      */
-    private $description;
+    private string $description;
 
     /**
      * @ORM\Column(type="string", length=2000)
      */
-    private $treatment;
+    private string $treatment;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $startedAt;
+    private DateTimeInterface $startedAt;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $endedAt;
+    private ?DateTimeInterface $endedAt;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $ended;
+    private bool $ended;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Infrastructure\Framework\Entity\Card", inversedBy="cases")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $card;
+    private ?Card $card;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $value): self
+    {
+        $this->id = $value;
+
+        return $this;
     }
 
     public function getDescription(): ?string

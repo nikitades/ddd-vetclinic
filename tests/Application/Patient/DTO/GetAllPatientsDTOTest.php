@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class GetAllPatientsDTOTest extends TestCase
 {
-    public function testOnTreatmentShortcut()
+    public function testOnTreatmentShortcut(): void
     {
         $getAllPatientsDTO = GetAllPatientsDTO::onTreatment();
         static::assertInstanceOf(GetAllPatientsDTO::class, $getAllPatientsDTO);
@@ -15,7 +15,7 @@ class GetAllPatientsDTOTest extends TestCase
         static::assertFalse($getAllPatientsDTO->released);
     }
 
-    public function testReleasedShortcut()
+    public function testReleasedShortcut(): void
     {
         $getAllPatientsDTO = GetAllPatientsDTO::released();
         static::assertInstanceOf(GetAllPatientsDTO::class, $getAllPatientsDTO);
@@ -23,7 +23,7 @@ class GetAllPatientsDTOTest extends TestCase
         static::assertFalse($getAllPatientsDTO->onTreatment);
     }
 
-    public function testGetOnTreatmentProp()
+    public function testGetOnTreatmentProp(): void
     {
         $getAllPatientsDTO = GetAllPatientsDTO::onTreatment();
         static::assertInstanceOf(GetAllPatientsDTO::class, $getAllPatientsDTO);
@@ -32,7 +32,7 @@ class GetAllPatientsDTOTest extends TestCase
         static::assertTrue($onTreatmentProp);
     }
 
-    public function testGetReleasedProp()
+    public function testGetReleasedProp(): void
     {
         $getAllPatientsDTO = GetAllPatientsDTO::Released();
         static::assertInstanceOf(GetAllPatientsDTO::class, $getAllPatientsDTO);

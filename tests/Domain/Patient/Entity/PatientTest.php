@@ -20,7 +20,7 @@ use App\Domain\Patient\ValueObject\OwnerAddress;
 use App\Domain\Patient\ValueObject\PatientSpecies;
 use App\Domain\Patient\ValueObject\PatientBirthDate;
 
-class PatientCardTest extends TestCase
+class PatientTest extends TestCase
 {
     private function createOwner(): Owner
     {
@@ -33,6 +33,12 @@ class PatientCardTest extends TestCase
         return $o;
     }
 
+    /**
+     * Quickly creates a patien in various ways
+     *
+     * @param bool[] $params
+     * @return Patient
+     */
     private function createPatient(array $params = []): Patient
     {
         $p = new Patient(
@@ -53,13 +59,10 @@ class PatientCardTest extends TestCase
         return $p;
     }
 
-    public function testAddCard()
+    public function testAddCard(): void
     {
         $patient = $this->createPatient();
-        $card = new Card(
-            new CardId(35),
-            $patient
-        );
+        $card = new Card();
         static::assertCount(0, $patient->getCards());
         $patient->addCard($card);
         static::assertCount(1, $patient->getCards());
@@ -69,19 +72,16 @@ class PatientCardTest extends TestCase
     /**
      * @expectedException App\Domain\Patient\Exception\MoreThanOneActiveCardIsNotAllowedException
      */
-    public function testMoreThan1CardIsNotAvailable()
+    public function testMoreThan1CardIsNotAvailable(): void
     {
         $patient = $this->createPatient();
-        $card = new Card(
-            new CardId(35),
-            $patient
-        );
+        $card = new Card();
         static::assertCount(0, $patient->getCards());
         $patient->addCard($card);
         $patient->addCard($card);
     }
 
-    public function testRemoveCard()
+    public function testRemoveCard(): void
     {
         $patientParams = [
             'with_card' => true
@@ -94,55 +94,55 @@ class PatientCardTest extends TestCase
         static::assertCount(0, $patient->getCards());
     }
 
-    public function testGetCards()
+    public function testGetCards(): void
     {
         $patient = $this->createPatient();
-        $card = new Card(
-            new CardId(35),
-            $patient
-        );
+        $card = new Card();
         static::assertEmpty($patient->getCards());
         $patient->addCard($card);
         static::assertCount(1, $patient->getCards());
         static::assertContainsOnly(Card::class, $patient->getCards());
     }
 
-    public function testGetName()
+    public function testGetName(): void
     {
         $patient = $this->createPatient();
         static::assertNotNull($patient->getName());
         static::assertInstanceOf(PatientName::class, $patient->getName());
     }
 
-    public function testGetBirthDate()
+    public function testGetBirthDate(): void
     {
         $patient = $this->createPatient();
         static::assertNotNull($patient->getBirthDate());
         static::assertInstanceOf(PatientBirthDate::class, $patient->getBirthDate());
     }
 
-    public function testGetSpecies()
+    public function testGetSpecies(): void
     {
         $patient = $this->createPatient();
         static::assertNotNull($patient->getSpecies());
         static::assertInstanceOf(PatientSpecies::class, $patient->getSpecies());
     }
 
-    public function testGetOwner()
+    public function testGetOwner(): void
     {
         $patient = $this->createPatient();
         static::assertNotNull($patient->getOwner());
         static::assertInstanceOf(Owner::class, $patient->getOwner());
     }
 
-    public function testRelease()
+    public function testRelease(): void
     {
         $patientParams = [
             'with_card' => true
         ];
         $patient = $this->createPatient($patientParams);
+        $card = $patient->getCurrentCard();
+        static::assertNotNull($card);
+        if (empty($card)) return;
         /** @var MedicalCase[] */
-        $cases = $patient->getCurrentCard()->getCases();
+        $cases = $card->getCases();
         static::assertEmpty($cases);
         
         $case = new MedicalCase();
@@ -150,9 +150,12 @@ class PatientCardTest extends TestCase
         $case->setTreatment(new MedicalCaseTreatment("Some treatment"));
         $case->setId(new MedicalCaseId(32));
         
-        $patient->getCurrentCard()->addCase($case);
+        $card = $patient->getCurrentCard();
+        static::assertNotNull($card);
+        if (empty($card)) return;
+        $card->addCase($case);
         /** @var MedicalCase[] */
-        $cases = $patient->getCurrentCard()->getCases();
+        $cases = $card->getCases();
         static::assertCount(1, $cases);
         static::assertContainsOnly(MedicalCase::class, $cases);
         static::assertFalse($cases[0]->isEnded()->getValue());

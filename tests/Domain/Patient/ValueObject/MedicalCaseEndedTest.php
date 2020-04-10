@@ -8,21 +8,21 @@ use App\Domain\Patient\ValueObject\MedicalCaseEndedAt;
 
 class MedicalCaseEndedTest extends TestCase
 {
-    public function testNewMedicalCaseEnded()
+    public function testNewMedicalCaseEnded(): void
     {
         $mce = new MedicalCaseEnded(true);
         static::assertInstanceOf(MedicalCaseEnded::class, $mce);
         static::assertEquals(true, $mce->getValue());
     }
 
-    public function testStaticEnded()
+    public function testStaticEnded(): void
     {
         $mce = MedicalCaseEnded::ended();
         static::assertInstanceOf(MedicalCaseEnded::class, $mce);
         static::assertEquals(true, $mce->getValue());
     }
 
-    public function testStaticNotEnded()
+    public function testStaticNotEnded(): void
     {
         $mce = MedicalCaseEnded::notEnded();
         static::assertInstanceOf(MedicalCaseEnded::class, $mce);

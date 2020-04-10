@@ -6,7 +6,7 @@ class CardClosed
 {
     private bool $closed;
 
-    public function __construct(bool $closed)
+    public final function __construct(bool $closed)
     {
         $this->closed = $closed;
     }

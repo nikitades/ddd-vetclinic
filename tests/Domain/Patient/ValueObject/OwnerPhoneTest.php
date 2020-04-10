@@ -10,7 +10,7 @@ class OwnerPhoneTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testShortPhone()
+    public function testShortPhone(): void
     {
         new OwnerPhone("+3");
     }
@@ -18,7 +18,7 @@ class OwnerPhoneTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testPhoneWithoutStartingPlus()
+    public function testPhoneWithoutStartingPlus(): void
     {
         new OwnerPhone("79993334444");
     }
@@ -26,7 +26,7 @@ class OwnerPhoneTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testTooLongPhone()
+    public function testTooLongPhone(): void
     {
         new OwnerPhone("799933344445");
     }
@@ -34,12 +34,12 @@ class OwnerPhoneTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testPhoneWithLetters()
+    public function testPhoneWithLetters(): void
     {
         new OwnerPhone("79993334A44");
     }
 
-    public function testCorrectPhone()
+    public function testCorrectPhone(): void
     {
         $phone = "+79993334444";
         $op = new OwnerPhone($phone);

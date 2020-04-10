@@ -10,12 +10,12 @@ class PatientNameTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testShortName()
+    public function testShortName(): void
     {
         $pn = new PatientName("a");
     }
 
-    public function testCorrectName()
+    public function testCorrectName(): void
     {
         $name = "Gandalf";
         $pn = new PatientName($name);

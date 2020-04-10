@@ -10,12 +10,12 @@ class OwnerNameTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testEmptyName()
+    public function testEmptyName(): void
     {
         new OwnerName("");
     }
 
-    public function testCorrectName()
+    public function testCorrectName(): void
     {
         $name = "Евграф";
         $ownerName = new OwnerName($name);

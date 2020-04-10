@@ -6,7 +6,7 @@ class MedicalCaseEnded
 {
     private bool $ended;
 
-    public function __construct(bool $ended)
+    public final function __construct(bool $ended)
     {
         $this->ended = $ended;
     }

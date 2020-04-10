@@ -3,33 +3,50 @@
 namespace App\Domain\Shared\ValueObject;
 
 use DateTime;
+use DateTimeInterface;
 
-class AbstractDateTimeValueObject extends AbstractValueObject
+class AbstractDateTimeValueObject
 {
-    protected DateTime $value;
+    protected DateTimeInterface $value;
 
-    public function __construct(DateTime $value)
+    public final function __construct(DateTimeInterface $value)
     {
         $this->check($value);
         $this->value = $value;
     }
 
-    public function getValue(): DateTime
+    public function getValue(): DateTimeInterface
     {
         return $this->value;
     }
 
-    protected function check(DateTime $value): void
+    public function equals(self $anotherObject): bool
+    {
+        return $this->value === $anotherObject->value;
+    }
+
+    protected function check(DateTimeInterface $value): void
     {
         //
     }
 
+    /**
+     * Creates an instance from a string
+     *
+     * @param string $str
+     * @return static
+     */
     public static function fromString(string $str): self
     {
         $date = new DateTime($str);
         return new static($date);
     }
 
+    /**
+     * Creates an instance with the current timestamp inside
+     *
+     * @return static
+     */
     public static function now(): self
     {
         return new static(new DateTime());

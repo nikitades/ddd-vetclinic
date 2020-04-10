@@ -11,7 +11,7 @@ use App\Application\Patient\IPatientRepository;
 use App\Infrastructure\Framework\Entity\MedicalCase as DBALMedicalCase;
 use App\Infrastructure\Framework\Repository\CardRepository as DBALCardRepository;
 use App\Infrastructure\Framework\Repository\OwnerRepository as DBALOwnerRepository;
-use App\Infrastructure\Repository\Framework\Entity\PatientRepository as DBALPatientRepository;
+use App\Infrastructure\Framework\Repository\PatientRepository as DBALPatientRepository;
 use App\Infrastructure\Framework\Repository\MedicalCaseRepository as DBALMedicalCaseRepository;
 
 /**
@@ -78,7 +78,7 @@ class PatientRepository implements IPatientRepository
     /**
      * @return Patient[]
      */
-    public function getAllPatients($onTreatment = true, $released = true): array
+    public function getAllPatients(bool $onTreatment = true, bool $released = true): array
     {
         return array_map(
             fn ($dbalPatient) => $this->adapter->fromDBALPatient($dbalPatient),

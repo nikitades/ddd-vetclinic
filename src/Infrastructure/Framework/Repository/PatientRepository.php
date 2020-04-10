@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\Repository\Framework\Entity;
+namespace App\Infrastructure\Framework\Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Infrastructure\Framework\Entity\Patient;
@@ -70,18 +70,18 @@ class PatientRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-    public function create(Patient $patient)
+    public function create(Patient $patient): void
     {
         $this->manager->persist($patient);
         $this->manager->flush();
     }
 
-    public function update(Patient $patient)
+    public function update(Patient $patient): void
     {
         $this->manager->flush(); //TODO: ??? мб можно как-то в одном месте в конце флаш вызывать?
     }
 
-    public function remove(Patient $patient)
+    public function remove(Patient $patient): void
     {
         $this->manager->remove($patient);
     }

@@ -2,7 +2,7 @@
 
 namespace App\Application\Patient\DTO;
 
-class GetAllPatientsDTO
+final class GetAllPatientsDTO
 {
     public bool $onTreatment;
     public bool $released;

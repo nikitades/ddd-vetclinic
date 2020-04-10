@@ -2,14 +2,19 @@
 
 namespace App\Domain\Shared\ValueObject;
 
-class AbstractId extends AbstractValueObject
+class AbstractId
 {
-    public function __construct(int $value)
+    public final function __construct(int $value)
     {
         $this->value = $value;
     }
 
     public int $value;
+
+    public function equals(self $anotherObject): bool
+    {
+        return $this->value === $anotherObject->value;
+    }
 
     public function getValue(): int
     {

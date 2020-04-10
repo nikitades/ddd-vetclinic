@@ -20,15 +20,15 @@ interface IPatientRepository
     /**
      * @return Patient[]
      */
-    public function getAllPatients($onTreatment = true, $released = true): array;
+    public function getAllPatients(bool $onTreatment = true, bool $released = true): array;
 
     public function updatePatient(Patient $patient): Patient;
     
-    /**
-     * @param Card[] $cards
-     * @return Card[]
-     */
-    public function updatePatientCards(array $cards): array;
+    // /**
+    //  * @param Card[] $cards
+    //  * @return Card[]
+    //  */
+    // public function updatePatientCards(array $cards): array;
 
     /**
      * @param MedicalCase[] $cases

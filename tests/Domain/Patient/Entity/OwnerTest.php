@@ -15,7 +15,7 @@ use App\Domain\Patient\ValueObject\OwnerRegisteredAt;
 use App\Domain\Patient\ValueObject\PatientBirthDate;
 use App\Domain\Patient\ValueObject\PatientSpecies;
 
-class OwnerPatientsTest extends TestCase
+class OwnerTest extends TestCase
 {
     private function createOwner(): Owner
     {
@@ -40,7 +40,7 @@ class OwnerPatientsTest extends TestCase
         return $p;
     }
 
-    public function testGetPatients()
+    public function testGetPatients(): void
     {
         $owner = $this->createOwner();
         static::assertEmpty($owner->getPatients());
@@ -53,7 +53,7 @@ class OwnerPatientsTest extends TestCase
         static::assertCount(3, $owner->getPatients());
     }
 
-    public function testAddPatient()
+    public function testAddPatient(): void
     {
         $owner = $this->createOwner();
         static::assertEmpty($owner->getPatients());
@@ -62,7 +62,7 @@ class OwnerPatientsTest extends TestCase
         static::assertCount(1, $owner->getPatients());
     }
 
-    public function testRemovePatient()
+    public function testRemovePatient(): void
     {
         $owner = $this->createOwner();
         static::assertEmpty($owner->getPatients());
@@ -73,28 +73,28 @@ class OwnerPatientsTest extends TestCase
         static::assertEmpty($owner->getPatients());
     }
 
-    public function testGetName()
+    public function testGetName(): void
     {
         $owner = $this->createOwner();
         static::assertNotNull($owner->getName());
         static::assertInstanceOf(OwnerName::class, $owner->getName());
     }
 
-    public function testGetPhone()
+    public function testGetPhone(): void
     {
         $owner = $this->createOwner();
         static::assertNotNull($owner->getPhone());
         static::assertInstanceOf(OwnerPhone::class, $owner->getPhone());
     }
 
-    public function testGetAddress()
+    public function testGetAddress(): void
     {
         $owner = $this->createOwner();
         static::assertNotNull($owner->getAddress());
         static::assertInstanceOf(OwnerAddress::class, $owner->getAddress());
     }
 
-    public function testGetRegisteredAt()
+    public function testGetRegisteredAt(): void
     {
         $owner = $this->createOwner();
         static::assertNotNull($owner->getRegisteredAt());

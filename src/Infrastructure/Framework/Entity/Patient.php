@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Framework\Entity;
 
 use App\Infrastructure\Framework\Entity\Card;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 
@@ -16,37 +17,45 @@ class Patient
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=500)
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Column(type="date")
      */
-    private $birthDate;
+    private DateTimeInterface $birthDate;
 
     /**
      * @ORM\Column(type="string", length=500)
      */
-    private $species;
+    private string $species;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Infrastructure\Framework\Entity\Owner", inversedBy="patients")
      * @ORM\JoinColumn(nullable=true)
      */
-    private $owner;
+    private ?Owner $owner;
 
     /**
+     * @var Collection<mixed,Card>
      * @ORM\OneToMany(targetEntity="App\Infrastructure\Framework\Entity\Card", mappedBy="patient")
      */
-    private $cards;
+    private Collection $cards;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $value): self
+    {
+        $this->id = $value;
+
+        return $this;
     }
 
     public function getName(): ?string
@@ -98,7 +107,7 @@ class Patient
     }
 
     /**
-     * @return Collection|Card[]
+     * @return Collection<mixed,Card>|Card[]
      */
     public function getCards(): Collection
     {
@@ -111,6 +120,19 @@ class Patient
             $this->cards[] = $card;
             $card->setPatient($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * Sets cards equal to the given list
+     *
+     * @param Collection<mixed,Card>|Card[] $cards
+     * @return self
+     */
+    public function setCards(Collection $cards): self
+    {
+        $this->cards = $cards;
 
         return $this;
     }

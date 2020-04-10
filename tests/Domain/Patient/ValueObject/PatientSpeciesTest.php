@@ -10,12 +10,12 @@ class PatientSpeciesTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testShortName()
+    public function testShortName(): void
     {
         new PatientSpecies("ы");
     }
 
-    public function testCorrectSpecies()
+    public function testCorrectSpecies(): void
     {
         $species = "Shiba-Inu";
         $ps = new PatientSpecies($species);

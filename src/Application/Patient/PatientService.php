@@ -42,7 +42,7 @@ class PatientService
     {
         $owner = $this->patientRepo->getOwnerById($addPatientDTO->ownerId);
         if (is_null($owner)) {
-            throw new OwnerNotFoundException($addPatientDTO->ownerId);
+            throw new OwnerNotFoundException((string) $addPatientDTO->ownerId);
         }
         $patient = new Patient(
             new PatientName($addPatientDTO->patientName),
@@ -86,7 +86,12 @@ class PatientService
             $updatePatientDTO->ownerName
         );
         if (empty($patient)) {
-            throw new PatientNotFoundException($patient);
+            throw new PatientNotFoundException(
+                (string) ($updatePatientDTO->patientId
+                    ?? $updatePatientDTO->patientName
+                    ?? $updatePatientDTO->ownerId
+                    ?? $updatePatientDTO->ownerName)
+            );
         }
         $patient->setName(new PatientName($updatePatientDTO->patientName));
         $patient->setSpecies(new PatientSpecies($updatePatientDTO->patientSpecies));
@@ -193,7 +198,12 @@ class PatientService
         $getPatientDTO->ownerName = $ownerName;
         $patient = $this->getPatient($getPatientDTO);
         if (empty($patient)) {
-            throw new PatientNotFoundException($patient);
+            throw new PatientNotFoundException(
+                (string) ($getPatientDTO->patientId
+                    ?? $getPatientDTO->patientName
+                    ?? $getPatientDTO->ownerId
+                    ?? $getPatientDTO->ownerName)
+            );
         }
         return $patient;
     }

@@ -4,6 +4,7 @@ namespace App\Infrastructure\Framework\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Infrastructure\Framework\Entity\Patient;
+use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -17,32 +18,33 @@ class Owner
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=500)
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Column(type="string", length=30)
      */
-    private $phone;
+    private string $phone;
 
     /**
      * @ORM\Column(type="string", length=500)
      */
-    private $address;
+    private string $address;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $registeredAt;
+    private DateTimeInterface $registeredAt;
 
     /**
+     * @var Collection<mixed,Patient>|Patient[]
      * @ORM\OneToMany(targetEntity="App\Infrastructure\Framework\Entity\Patient", mappedBy="owner")
      */
-    private $patients;
+    private Collection $patients;
 
     public function __construct()
     {
@@ -52,6 +54,13 @@ class Owner
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $value): self
+    {
+        $this->id = $value;
+
+        return $this;
     }
 
     public function getName(): ?string
@@ -103,7 +112,7 @@ class Owner
     }
 
     /**
-     * @return Collection|Patient[]
+     * @return Collection<mixed,Patient>|Patient[]
      */
     public function getPatients(): Collection
     {
@@ -116,6 +125,19 @@ class Owner
             $this->patients[] = $patient;
             $patient->setOwner($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * Sets patients equal to the given list
+     *
+     * @param Collection<mixed,Patient>|Patient[] $patients
+     * @return self
+     */
+    public function setPatients(Collection $patients): self
+    {
+        $this->patients = $patients;
 
         return $this;
     }

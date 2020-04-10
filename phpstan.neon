@@ -1,0 +1,8 @@
+parameters:
+	autoload_files:
+		- vendor/autoload.php
+		- bin/.phpunit/phpunit-7.5-0/vendor/autoload.php
+	level: max
+	excludes_analyse:
+		- tests/bootstrap.php
+		- src/Infrastructure/Framework/Migrations

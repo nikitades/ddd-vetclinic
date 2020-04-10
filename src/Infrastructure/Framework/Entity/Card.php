@@ -4,6 +4,7 @@ namespace App\Infrastructure\Framework\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Infrastructure\Framework\Entity\MedicalCase;
+use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -17,28 +18,24 @@ class Card
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $closed;
+    private int $id;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $createdAt;
+    private DateTimeInterface $createdAt;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Infrastructure\Framework\Entity\Patient", inversedBy="cards")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $patient;
+    private ?Patient $patient;
 
     /**
+     * @var Collection<mixed,MedicalCase>|MedicalCase[]
      * @ORM\OneToMany(targetEntity="App\Infrastructure\Framework\Entity\MedicalCase", mappedBy="card")
      */
-    private $cases;
+    private Collection $cases;
 
     public function __construct()
     {
@@ -50,14 +47,9 @@ class Card
         return $this->id;
     }
 
-    public function getClosed(): ?bool
+    public function setId(int $value): self
     {
-        return $this->closed;
-    }
-
-    public function setClosed(bool $closed): self
-    {
-        $this->closed = $closed;
+        $this->id = $value;
 
         return $this;
     }
@@ -87,7 +79,7 @@ class Card
     }
 
     /**
-     * @return Collection|MedicalCase[]
+     * @return Collection<mixed,MedicalCase>|MedicalCase[]
      */
     public function getCases(): Collection
     {
@@ -100,6 +92,19 @@ class Card
             $this->cases[] = $case;
             $case->setCard($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * Sets the cases list equal to the given one
+     *
+     * @param Collection<mixed,MedicalCase>|MedicalCase[] $cases
+     * @return self
+     */
+    public function setCases(Collection $cases): self
+    {
+        $this->cases = $cases;
 
         return $this;
     }
