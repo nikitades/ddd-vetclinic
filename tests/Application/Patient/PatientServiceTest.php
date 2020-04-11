@@ -3,6 +3,7 @@
 namespace App\Test\Application\Patient;
 
 use DateTime;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use App\Domain\Patient\Entity\Card;
 use App\Domain\Patient\Entity\Owner;
@@ -15,26 +16,28 @@ use App\Domain\Patient\ValueObject\OwnerName;
 use App\Domain\Patient\ValueObject\PatientId;
 use App\Application\Patient\DTO\AddPatientDTO;
 use App\Application\Patient\DTO\GetPatientDTO;
+use App\Domain\Patient\ValueObject\OwnerEmail;
 use App\Domain\Patient\ValueObject\OwnerPhone;
+use App\Application\Patient\DTO\CreateOwnerDTO;
 use App\Application\Patient\IPatientRepository;
 use App\Domain\Patient\ValueObject\PatientName;
 use App\Domain\Patient\ValueObject\OwnerAddress;
+use App\Application\Patient\DTO\CreatePatientDTO;
 use App\Application\Patient\DTO\RemovePatientDTO;
+use App\Domain\Patient\ValueObject\MedicalCaseId;
 use App\Application\Patient\DTO\GetAllPatientsDTO;
 use App\Application\Patient\DTO\ReleasePatientDTO;
 use App\Domain\Patient\ValueObject\PatientSpecies;
 use App\Application\Patient\DTO\AddCardToPatientDTO;
-use App\Domain\Patient\ValueObject\PatientBirthDate;
-use App\Application\Patient\DTO\RemoveCardFromPatientDTO;
-use App\Application\Patient\DTO\AddMedicalCaseToPatientDTO;
 use App\Application\Patient\DTO\CloseMedicalCaseDTO;
-use App\Application\Patient\DTO\RemoveMedicalCaseFromPatientDTO;
+use App\Domain\Patient\ValueObject\PatientBirthDate;
 use App\Application\Patient\DTO\RequireNotificationDTO;
-use App\Domain\Patient\ValueObject\MedicalCaseDescription;
-use App\Domain\Patient\ValueObject\MedicalCaseId;
+use App\Application\Patient\DTO\AttachPatientToOwnerDTO;
 use App\Domain\Patient\ValueObject\MedicalCaseTreatment;
-use App\Domain\Patient\ValueObject\OwnerEmail;
-use InvalidArgumentException;
+use App\Application\Patient\DTO\RemoveCardFromPatientDTO;
+use App\Domain\Patient\ValueObject\MedicalCaseDescription;
+use App\Application\Patient\DTO\AddMedicalCaseToPatientDTO;
+use App\Application\Patient\DTO\RemoveMedicalCaseFromPatientDTO;
 
 class PatientServiceTest extends TestCase
 {
@@ -158,13 +161,20 @@ class PatientServiceTest extends TestCase
                 [$this->patient3->getId()->getValue(), $this->patient3],
             ]);
 
+        $patientRepo
+            ->method("createPatient")
+            ->willReturn($this->patient1);
+
+        $patientRepo
+            ->method("createOwner")
+            ->willReturn($this->patient2->getOwner());
+
         return new PatientService($patientRepo);
     }
 
-    private function createAddPatientDTO(int $ownerId, string $dogName, string $dogSpecies, string $dogBirthDate): AddPatientDTO
+    private function createAddPatientDTO(string $dogName, string $dogSpecies, string $dogBirthDate): AddPatientDTO
     {
         return new AddPatientDTO(
-            $ownerId,
             $dogName,
             $dogSpecies,
             $dogBirthDate
@@ -198,7 +208,6 @@ class PatientServiceTest extends TestCase
         foreach ([$patient1, $patient2, $patient3] as $patient) {
             if (is_null($patient->getOwner())) throw new InvalidArgumentException("A patient is expected to have the owner here");
             $addPatientDTO = $this->createAddPatientDTO(
-                $patient->getOwner()->getId()->getValue(),
                 $patient->getName()->getValue(),
                 $patient->getSpecies()->getValue(),
                 $patient->getBirthDate()->getValue()->format("Y-m-d")
@@ -238,7 +247,6 @@ class PatientServiceTest extends TestCase
         foreach ([$patient1, $patient2, $patient3] as $patient) {
             if (is_null($patient->getOwner())) throw new InvalidArgumentException("A patient is expected to have the owner here");
             $addPatientDTO = $this->createAddPatientDTO(
-                $patient->getOwner()->getId()->getValue(),
                 $patient->getName()->getValue(),
                 $patient->getSpecies()->getValue(),
                 $patient->getBirthDate()->getValue()->format("Y-m-d")
@@ -276,7 +284,7 @@ class PatientServiceTest extends TestCase
         $dogSpecies = $this->patient3->getSpecies()->getValue();
         $dogBirthDate = $this->patient3->getBirthDate()->getValue()->format("Y-m-d");
 
-        $addPatientDTO = $this->createAddPatientDTO($owner->getId()->getValue(), $dogName, $dogSpecies, $dogBirthDate);
+        $addPatientDTO = $this->createAddPatientDTO($dogName, $dogSpecies, $dogBirthDate);
         $patientService->addPatient($addPatientDTO);
 
         $getPatientDTO = new GetPatientDTO();
@@ -301,7 +309,7 @@ class PatientServiceTest extends TestCase
         $dogSpecies = $this->patient1->getSpecies()->getValue();
         $dogBirthDate = $this->patient1->getBirthDate()->getValue()->format("Y-m-d");
 
-        $addPatientDTO = $this->createAddPatientDTO($owner->getId()->getValue(), $dogName, $dogSpecies, $dogBirthDate);
+        $addPatientDTO = $this->createAddPatientDTO($dogName, $dogSpecies, $dogBirthDate);
         $patientService->addPatient($addPatientDTO);
 
         $getAllPatientsDTO = new GetAllPatientsDTO();
@@ -496,5 +504,113 @@ class PatientServiceTest extends TestCase
         $patientService->requireNotification($requireNotificationDTO);
 
         static::assertTrue($owner->getNotificationRequired()->getValue());
+    }
+
+    public function testCreatePatient(): void
+    {
+        $patientService = $this->createPatientService();
+
+        $patient = $this->patient1;
+        $addPatientDTO = new AddPatientDTO(
+            $patient->getName()->getValue(),
+            $patient->getSpecies()->getValue(),
+            $patient->getBirthDate()->getValue()->format("Y-m-d H:i:s")
+        );
+
+        $patient = $patientService->addPatient($addPatientDTO);
+        static::assertNotNull($patient);
+        static::assertInstanceOf(Patient::class, $patient);
+
+        $getPatientDTO = new GetPatientDTO();
+        $getPatientDTO->patientId = $patient->getId()->getValue();
+        $newPatient = $patientService->getPatient($getPatientDTO);
+        static::assertNotNull($newPatient);
+        static::assertInstanceOf(Patient::class, $newPatient);
+        if (empty($newPatient)) return;
+
+        static::assertEquals($patient->getName()->getValue(), $newPatient->getName()->getValue());
+    }
+
+    public function testCreateOwner(): void
+    {
+        $patientService = $this->createPatientService();
+
+        $owner = $this->patient2->getOwner();
+        static::assertNotNull($owner);
+        static::assertInstanceOf(Owner::class, $owner);
+        if (empty($owner)) return;
+
+        $createOwnerDTO = new CreateOwnerDTO();
+        $createOwnerDTO->name = $owner->getName()->getValue();
+        $createOwnerDTO->email = $owner->getEmail()->getValue();
+        $createOwnerDTO->address = $owner->getAddress()->getValue();
+        $createOwnerDTO->phone = $owner->getPhone()->getValue();
+
+        $createdOwner = $patientService->createOwner($createOwnerDTO);
+        static::assertNotNull($createdOwner);
+        static::assertInstanceOf(Owner::class, $createdOwner);
+        static::assertTrue($owner->getName()->equals($createdOwner->getName()));
+    }
+
+    public function testAttachPatientToOwner(): void
+    {
+        $patientService = $this->createPatientService();
+
+        $patient = $this->patient3;
+        $owner = $patient->getOwner();
+        if (empty($owner)) return;
+
+        $attachPatientToOwnerDTO = new AttachPatientToOwnerDTO();
+        $attachPatientToOwnerDTO->patientId = $patient->getId()->getValue();
+        $attachPatientToOwnerDTO->ownerId = $owner->getId()->getValue();
+
+        /** array<mixed> */
+        $result = $patientService->attachPatientToOwner($attachPatientToOwnerDTO);
+        /** @var Patient */
+        $attachedPatient = $result[0];
+        /** @var Owner */
+        $attachedOwner = $result[1];
+
+        static::assertNotNull($attachedPatient);
+        static::assertInstanceOf(Patient::class, $attachedPatient);
+        static::assertTrue($attachedPatient->getId()->equals($patient->getId()));
+
+        static::assertNotNull($attachedOwner);
+        static::assertInstanceOf(Owner::class, $attachedOwner);
+        static::assertTrue($attachedOwner->getId()->equals($owner->getId()));
+    }
+
+    /**
+     * @expectedException \App\Application\Patient\Exception\OwnerNotFoundException
+     */
+    public function testAttachPatientToOwnerWithNotExistingOwner(): void
+    {
+        $patientService = $this->createPatientService();
+
+        $patient = $this->patient3;
+
+        $attachPatientToOwnerDTO = new AttachPatientToOwnerDTO();
+        $attachPatientToOwnerDTO->patientId = $patient->getId()->getValue();
+        $attachPatientToOwnerDTO->ownerId = 234;
+
+        $patientService->attachPatientToOwner($attachPatientToOwnerDTO);
+    }
+
+    /**
+     * @expectedException \App\Application\Patient\Exception\PatientNotFoundException
+     */
+    public function testAttachPatientToOwnerWithNotExistingPatient(): void
+    {
+        $patientService = $this->createPatientService();
+
+        $patient = $this->patient3;
+        $owner = $patient->getOwner();
+        if (empty($owner)) return;
+
+        $attachPatientToOwnerDTO = new AttachPatientToOwnerDTO();
+        $attachPatientToOwnerDTO->patientId = 564;
+        $attachPatientToOwnerDTO->ownerId = $owner->getId()->getValue();
+
+        $patientService->attachPatientToOwner($attachPatientToOwnerDTO);
     }
 }

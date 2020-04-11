@@ -44,6 +44,8 @@ Id: int
 Name: string
 Phone: string
 Address: string
+Email: string
+NotificationRequired: bool
 Patients: Patient[]
 RegisterdAt: DateTime
 ```
@@ -59,3 +61,54 @@ StartedAt: DateTime
 Ended: bool
 EndedAt: DateTime
 ```
+
+Since the patient can be created without the owner, the patient appears to be an aggregate root here.
+So all the persistence methods regarding the patient, card, medical case or owner are localed in the patients repository (IPatientRepository).
+
+- - -
+
+### The idea
+
+It's a system designed with a hexagonal architecture in mind.
+I tried to separate the domain model from the application layer, and the application layer from the infrastructure services.
+
+The concepts:
+- domain level (domain models and their relations) //not a doctrine models!
+- application level - services making actions on domain models
+- infrastructure level
+    - dbal-agnostic repository (IPatientRepository) - contains all the methods to persist the data, but could rearranged to use any persistence layer you with to
+    - framework repositories - doctrine repositories containing the queries
+    - framework http layer - serving as an interface with incoming and outcoming data
+    - framework commands layer - another interface providing some control over the application services
+
+- - -
+
+### Routes to implement
+
+    V   - POST /patients
+    V   - POST /owners
+    V   - PUT /patients/:id/attachOwner
+        - PUT /patients/released
+        - GET /patients/onTreatment
+        - POST /patients/:id/cards/:cardId -> createMedicalCase
+        - GET /patients/:id/cards -> getCards
+        - POST /patients/:id/cards -> createCard
+        - PUT /patients/:id/cards -> updateCard
+        - DELETE /patients/:id -> deleteCard
+        - GET /patients/:id/cards/:cardId -> getCard
+        - GET /patients/:id/cards/:cardId/cases -> getCardCases
+        - PUT /patients/:id/cards/:cardId/cases/:caseId -> updateMedicalCase
+        - DELETE /patients/:id/cards/:cardId/cases/:caseId -> deleteMedicalCase
+        - GET /patients/:id/cases -> getPatientCases
+        - GET /doctors/available
+        - GET /doctors/all
+
+It takes too long to implement all the methods covered with all the tests, so I created three endpoints. Just imagine the rest of them, they are not planned to differ much.
+
+- - -
+
+### CLI Commands
+
+    clinic:patient:state <patientId/patientName>
+
+Located at the infrastucture level, belonging to the framework-bound part of the system, this command is just another way to call the Patient service methods.

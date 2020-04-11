@@ -41,8 +41,23 @@ class PatientRepository implements IPatientRepository
         $this->dbalCardRepository = $dbalCardRepository;
     }
 
+    public function createPatient(Patient $patient): Patient
+    {
+        $dbalPatient = $this->adapter->fromDomainPatient($patient);
+        $newDbalPatient = $this->dbalPatientRepository->create($dbalPatient);
+        return $this->adapter->fromDBALPatient($newDbalPatient);
+    }
+
+    public function createOwner(Owner $owner): Owner
+    {
+        $dbalOwner = $this->adapter->fromDomainOwner($owner);
+        $newDbalOwner = $this->dbalOwnerRepository->create($dbalOwner);
+        return $this->adapter->fromDBALOwner($newDbalOwner);
+    }
+
     public function addPatientToOwner(Patient $patient, Owner $owner): void
     {
+        $patient->setOwner($owner);
         $dbalPatient = $this->adapter->fromDomainPatient($patient);
         $this->dbalPatientRepository->create($dbalPatient);
     }

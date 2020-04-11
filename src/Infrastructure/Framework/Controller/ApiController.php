@@ -40,22 +40,6 @@ class ApiController extends AbstractApiController
             return $this->apiResponse(new PatientStateNotFoundResponse());
         }
         return $this->apiResponse(new PatientStateSuccessResponse($patient));
-        /**
-         * TODO: делаем апи с классами-ответами
-         * 1. Create AdminApiController
-         * 2. Decide on how to describe the answer classes and where to store
-         * 3. TDD all the methods 
-         *      - API
-         *          - GET /patients/state
-         *          - POST /patients/requireNotification
-         *      - API/ADMIN
-         *          - POST /patients/register
-         *          - PUT /patients/attach
-         *          - GET /doctors/available
-         *          - GET /doctors/all
-         *          - PUT /patients/release
-         *          - GET /patients/onTreatment
-         */
     }
 
     /**

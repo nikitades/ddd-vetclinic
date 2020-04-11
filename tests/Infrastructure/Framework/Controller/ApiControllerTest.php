@@ -162,17 +162,6 @@ class ApiControllerTest extends WebTestCase
 
     public function testRequireNotification(): void
     {
-        /**
-         * TODO:
-         * 1 - приходит запрос
-         * 2 - его ловит контроллер, берет параметры
-         * 3 - прокидывает параметры в PatientService
-         * 4 - тут нужно замутить поле email nullable и булево поле requiresNotificaton в Owner
-         * 5 - PatientService вызывает PatientRepo -> setNotificationRequired. Тут если мыло пустое, бросаем эксепшен
-         * 6 - PatientRepo вызывает DBALOwnerRepo -> setNotificationRequired где уже селекты селекты
-         * 7 - когда все сделано, контроллер отвечает объектом, где мыло, на которое назначено оповещение и статус 200
-         * TODO: его-то мы и тестим сейчас!
-         */
         $patient = $this->createPatient();
         $container = $this->getContainer();
 

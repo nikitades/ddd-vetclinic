@@ -9,6 +9,8 @@ use App\Domain\Patient\Entity\MedicalCase;
 
 interface IPatientRepository
 {
+    public function createPatient(Patient $patient): Patient;
+    public function createOwner(Owner $owner): Owner;
     public function addPatientToOwner(Patient $patient, Owner $owner): void;
     public function addCardToPatient(Card $card): void;
 

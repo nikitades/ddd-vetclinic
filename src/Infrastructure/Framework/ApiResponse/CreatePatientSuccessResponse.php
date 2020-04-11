@@ -2,10 +2,9 @@
 
 namespace App\Infrastructure\Framework\ApiResponse;
 
-use DateTime;
 use App\Domain\Patient\Entity\Patient;
 
-final class PatientStateSuccessResponse extends AbstractApiResponse
+class CreatePatientSuccessResponse extends AbstractApiResponse
 {
     use JsonConverting;
 
@@ -21,16 +20,11 @@ final class PatientStateSuccessResponse extends AbstractApiResponse
         return 200;
     }
 
-    /**
-     * Creates the json output
-     *
-     * @return mixed
-     */
+    /** @return mixed */
     public function jsonSerialize()
     {
         return [
-            'patient' => $this->json($this->patient),
-            'released' => $this->patient->isCured()
+            'patient' => $this->json($this->patient)
         ];
     }
 }

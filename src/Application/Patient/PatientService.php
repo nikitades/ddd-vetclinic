@@ -8,10 +8,15 @@ use App\Domain\Patient\Entity\Owner;
 use App\Domain\Patient\Entity\Patient;
 use App\Domain\Patient\Entity\MedicalCase;
 use App\Domain\Patient\ValueObject\CardId;
+use App\Domain\Patient\ValueObject\OwnerName;
 use App\Application\Patient\DTO\AddPatientDTO;
 use App\Application\Patient\DTO\GetPatientDTO;
+use App\Domain\Patient\ValueObject\OwnerEmail;
+use App\Domain\Patient\ValueObject\OwnerPhone;
+use App\Application\Patient\DTO\CreateOwnerDTO;
 use App\Application\Patient\IPatientRepository;
 use App\Domain\Patient\ValueObject\PatientName;
+use App\Domain\Patient\ValueObject\OwnerAddress;
 use App\Application\Patient\DTO\RemovePatientDTO;
 use App\Application\Patient\DTO\UpdatePatientDTO;
 use App\Domain\Patient\ValueObject\MedicalCaseId;
@@ -26,6 +31,7 @@ use App\Domain\Patient\ValueObject\MedicalCaseTreatment;
 use App\Application\Patient\DTO\RemoveCardFromPatientDTO;
 use App\Domain\Patient\ValueObject\MedicalCaseDescription;
 use App\Application\Patient\DTO\AddMedicalCaseToPatientDTO;
+use App\Application\Patient\DTO\AttachPatientToOwnerDTO;
 use App\Application\Patient\Exception\OwnerNotFoundException;
 use App\Application\Patient\Exception\PatientNotFoundException;
 use App\Application\Patient\DTO\RemoveMedicalCaseFromPatientDTO;
@@ -40,18 +46,15 @@ class PatientService
         $this->patientRepo = $patientRepo;
     }
 
-    public function addPatient(AddPatientDTO $addPatientDTO): void
+    public function addPatient(AddPatientDTO $addPatientDTO): Patient
     {
-        $owner = $this->patientRepo->getOwnerById($addPatientDTO->ownerId);
-        if (is_null($owner)) {
-            throw new OwnerNotFoundException((string) $addPatientDTO->ownerId);
-        }
         $patient = new Patient(
             new PatientName($addPatientDTO->patientName),
             new PatientBirthDate(new DateTime($addPatientDTO->patientBirthDate)),
             new PatientSpecies($addPatientDTO->patientSpecies)
         );
-        $this->patientRepo->addPatientToOwner($patient, $owner);
+        $createdPatient = $this->patientRepo->createPatient($patient);
+        return $createdPatient;
     }
 
     public function getPatient(GetPatientDTO $getPatientDTO): ?Patient
@@ -68,6 +71,11 @@ class PatientService
         throw new \InvalidArgumentException("No valid query parameters given (owner's name, patient's name or patient's id)");
     }
 
+    public function getOwner(int $ownerId): ?Owner
+    {
+        return $this->patientRepo->getOwnerById($ownerId);
+    }
+
     /**
      * Gets all the patients meeting the criteria
      *
@@ -77,6 +85,17 @@ class PatientService
     public function getAllPatients(GetAllPatientsDTO $getAllPatientsDTO): array
     {
         return $this->patientRepo->getAllPatients($getAllPatientsDTO->onTreatment, $getAllPatientsDTO->released);
+    }
+
+    public function createOwner(CreateOwnerDTO $createOwnerDTO): Owner
+    {
+        $owner = new Owner(
+            new OwnerName($createOwnerDTO->name),
+            new OwnerPhone($createOwnerDTO->phone),
+            new OwnerAddress($createOwnerDTO->address),
+            new OwnerEmail($createOwnerDTO->email)
+        );
+        return $this->patientRepo->createOwner($owner);
     }
 
     public function updatePatient(UpdatePatientDTO $updatePatientDTO): Patient
@@ -201,11 +220,31 @@ class PatientService
         );
         $owner = $patient->getOwner();
         if (empty($owner)) {
-            throw new OwnerNotFoundException();
+            throw new OwnerNotFoundException("of patient " . $patient->getId()->getValue());
         }
         $owner->enableNotification();
         $this->patientRepo->updateOwner($owner);
         return $owner;
+    }
+
+    /**
+     * Attaches a patient to owner
+     *
+     * @param AttachPatientToOwnerDTO $attachPatientToOwnerDTO
+     * @return array<mixed>
+     */
+    public function attachPatientToOwner(AttachPatientToOwnerDTO $attachPatientToOwnerDTO): array
+    {
+        $patient = $this->fetchPatient($attachPatientToOwnerDTO->patientId, null, null, null);
+        $owner = $this->getOwner($attachPatientToOwnerDTO->ownerId);
+        if (empty($owner)) {
+            throw new OwnerNotFoundException((string) $attachPatientToOwnerDTO->ownerId);
+        }
+
+        $patient->setOwner($owner);
+        $this->patientRepo->updatePatient($patient);
+
+        return [$patient, $owner];
     }
 
     protected function fetchPatient(?int $patientId, ?string $patientName, ?int $ownerId, ?string $ownerName): Patient

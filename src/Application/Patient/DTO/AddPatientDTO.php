@@ -9,9 +9,8 @@ class AddPatientDTO
     public string $patientSpecies;
     public string $patientBirthDate;
 
-    public function __construct(int $ownerId, string $patientName, string $patientSpecies, string $patientBirthDate)
+    public function __construct(string $patientName, string $patientSpecies, string $patientBirthDate)
     {
-        $this->ownerId = $ownerId;
         $this->patientName = $patientName;
         $this->patientSpecies = $patientSpecies;
         $this->patientBirthDate = $patientBirthDate;

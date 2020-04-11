@@ -70,16 +70,17 @@ class PatientRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-    public function create(Patient $patient): void
+    public function create(Patient $patient): Patient
     {
         $this->manager->persist($patient);
         $this->manager->flush();
+        return $patient;
     }
 
     public function update(Patient $patient): void
     {
         $this->manager->persist($patient);
-        $this->manager->flush(); //TODO: ??? мб можно как-то в одном месте в конце флаш вызывать?
+        $this->manager->flush();
     }
 
     public function remove(Patient $patient): void

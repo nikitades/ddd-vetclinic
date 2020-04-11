@@ -25,10 +25,18 @@ class OwnerRepository extends ServiceEntityRepository
         parent::__construct($registry, Owner::class);
     }
 
-    public function update(Owner $owner): void
+    public function create(Owner $owner): Owner
     {
         $this->manager->persist($owner);
         $this->manager->flush();
+        return $owner;
+    }
+
+    public function update(Owner $owner): Owner
+    {
+        $this->manager->persist($owner);
+        $this->manager->flush();
+        return $owner;
     }
 
     // /**
