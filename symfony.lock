@@ -88,7 +88,7 @@
         "version": "1.0.2"
     },
     "nikic/php-parser": {
-        "version": "v4.3.0"
+        "version": "v4.4.0"
     },
     "ocramius/package-versions": {
         "version": "1.7.0"
@@ -110,6 +110,9 @@
     },
     "psr/log": {
         "version": "1.1.2"
+    },
+    "symfony/browser-kit": {
+        "version": "v5.0.7"
     },
     "symfony/cache": {
         "version": "v5.0.5"
@@ -133,10 +136,16 @@
             "config/bootstrap.php"
         ]
     },
+    "symfony/css-selector": {
+        "version": "v5.0.7"
+    },
     "symfony/dependency-injection": {
         "version": "v5.0.5"
     },
     "symfony/doctrine-bridge": {
+        "version": "v5.0.7"
+    },
+    "symfony/dom-crawler": {
         "version": "v5.0.7"
     },
     "symfony/dotenv": {
@@ -253,6 +262,9 @@
     },
     "symfony/stopwatch": {
         "version": "v5.0.7"
+    },
+    "symfony/test-pack": {
+        "version": "v1.0.6"
     },
     "symfony/var-dumper": {
         "version": "v5.0.5"

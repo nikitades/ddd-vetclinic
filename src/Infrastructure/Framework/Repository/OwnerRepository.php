@@ -5,6 +5,7 @@ namespace App\Infrastructure\Framework\Repository;
 use App\Infrastructure\Framework\Entity\Owner;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @method Owner|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,9 +15,20 @@ use Doctrine\Common\Persistence\ManagerRegistry;
  */
 class OwnerRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    private EntityManagerInterface $manager;
+
+    public function __construct(
+        ManagerRegistry $registry,
+        EntityManagerInterface $manager
+    ) {
+        $this->manager = $manager;
         parent::__construct($registry, Owner::class);
+    }
+
+    public function update(Owner $owner): void
+    {
+        $this->manager->persist($owner);
+        $this->manager->flush();
     }
 
     // /**

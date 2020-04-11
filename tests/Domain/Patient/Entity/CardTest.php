@@ -7,15 +7,16 @@ use App\Domain\Patient\Entity\Card;
 use App\Domain\Patient\Entity\Owner;
 use App\Domain\Patient\Entity\Patient;
 use App\Domain\Patient\Entity\MedicalCase;
-use App\Domain\Patient\ValueObject\CardCreatedAt;
 use App\Domain\Patient\ValueObject\CardId;
-use App\Domain\Patient\ValueObject\MedicalCaseId;
 use App\Domain\Patient\ValueObject\OwnerId;
 use App\Domain\Patient\ValueObject\OwnerName;
 use App\Domain\Patient\ValueObject\PatientId;
+use App\Domain\Patient\ValueObject\OwnerEmail;
 use App\Domain\Patient\ValueObject\OwnerPhone;
 use App\Domain\Patient\ValueObject\PatientName;
 use App\Domain\Patient\ValueObject\OwnerAddress;
+use App\Domain\Patient\ValueObject\CardCreatedAt;
+use App\Domain\Patient\ValueObject\MedicalCaseId;
 use App\Domain\Patient\ValueObject\PatientSpecies;
 use App\Domain\Patient\ValueObject\PatientBirthDate;
 
@@ -26,7 +27,8 @@ class CardTest extends TestCase
         $o = new Owner(
             new OwnerName("Bubu"),
             new OwnerPhone("+79993334444"),
-            new OwnerAddress("Haha benis again")
+            new OwnerAddress("Haha benis again"),
+            new OwnerEmail("turnaroud@iseeyouover.cctv")
         );
         $o->setId(new OwnerId(35));
         return $o;

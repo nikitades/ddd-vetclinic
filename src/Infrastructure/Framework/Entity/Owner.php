@@ -46,6 +46,16 @@ class Owner
      */
     private Collection $patients;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $notificationRequired;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private string $email;
+
     public function __construct()
     {
         $this->patients = new ArrayCollection();
@@ -151,6 +161,30 @@ class Owner
                 $patient->setOwner(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNotificationRequired(): ?bool
+    {
+        return $this->notificationRequired;
+    }
+
+    public function setNotificationRequired(bool $notificationRequired): self
+    {
+        $this->notificationRequired = $notificationRequired;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
 
         return $this;
     }

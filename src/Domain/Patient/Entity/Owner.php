@@ -6,18 +6,22 @@ use DateTime;
 use App\Domain\Patient\ValueObject\OwnerId;
 use App\Domain\Patient\ValueObject\OwnerName;
 use App\Domain\Patient\ValueObject\PatientId;
+use App\Domain\Patient\ValueObject\OwnerEmail;
 use App\Domain\Patient\ValueObject\OwnerPhone;
 use App\Domain\Patient\ValueObject\OwnerAddress;
 use App\Domain\Patient\ValueObject\OwnerRegisteredAt;
 use App\Infrastructure\Framework\Repository\OwnerRepository;
+use App\Domain\Patient\ValueObject\OwnerNotificationRequired;
 
 class Owner
 {
-    public function __construct(OwnerName $name, OwnerPhone $phone, OwnerAddress $address)
+    public function __construct(OwnerName $name, OwnerPhone $phone, OwnerAddress $address, OwnerEmail $email)
     {
         $this->name = $name;
         $this->phone = $phone;
         $this->address = $address;
+        $this->email = $email;
+        $this->notificationRequired = OwnerNotificationRequired::off();
         $this->registeredAt = new OwnerRegisteredAt(new DateTime());
     }
 
@@ -25,11 +29,11 @@ class Owner
     protected OwnerName $name;
     protected OwnerPhone $phone;
     protected OwnerAddress $address;
-    /**
-     * @var Patient[]
-     */
+    protected OwnerEmail $email;
+    /** @var Patient[] */
     protected array $patients = [];
     protected OwnerRegisteredAt $registeredAt;
+    protected OwnerNotificationRequired $notificationRequired;
 
     public function getId(): OwnerId
     {
@@ -54,6 +58,16 @@ class Owner
     public function getAddress(): OwnerAddress
     {
         return $this->address;
+    }
+
+    public function getEmail(): OwnerEmail
+    {
+        return $this->email;
+    }
+
+    public function setEmail(OwnerEmail $value): void
+    {
+        $this->email = $value;
     }
 
     /**
@@ -95,5 +109,20 @@ class Owner
     public function setRegisteredAt(OwnerRegisteredAt $value): void
     {
         $this->registeredAt = $value;
+    }
+
+    public function getNotificationRequired(): OwnerNotificationRequired
+    {
+        return $this->notificationRequired;
+    }
+
+    public function enableNotification(): void
+    {
+        $this->notificationRequired = OwnerNotificationRequired::on();
+    }
+
+    public function disableNotification(): void
+    {
+        $this->notificationRequired = OwnerNotificationRequired::off();
     }
 }

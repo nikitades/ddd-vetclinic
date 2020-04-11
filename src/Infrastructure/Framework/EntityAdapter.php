@@ -7,6 +7,7 @@ use App\Infrastructure\IEntityAdapter;
 use App\Domain\Patient\ValueObject\CardId;
 use App\Domain\Patient\ValueObject\OwnerId;
 use App\Domain\Patient\ValueObject\OwnerName;
+use App\Domain\Patient\ValueObject\OwnerEmail;
 use App\Domain\Patient\ValueObject\OwnerPhone;
 use App\Domain\Patient\ValueObject\PatientName;
 use App\Domain\Patient\ValueObject\OwnerAddress;
@@ -67,6 +68,7 @@ class EntityAdapter implements IEntityAdapter
         $dbalOwner->setName($domainOwner->getName()->getValue());
         $dbalOwner->setPhone($domainOwner->getPhone()->getValue());
         $dbalOwner->setAddress($domainOwner->getAddress()->getValue());
+        $dbalOwner->setEmail($domainOwner->getEmail()->getValue());
         $dbalOwner->setRegisteredAt($domainOwner->getRegisteredAt()->getValue());
         $dbalOwner->setPatients(new ArrayCollection(array_map(
             fn ($domainPatient) => $this->fromDomainPatient($domainPatient),
@@ -82,7 +84,7 @@ class EntityAdapter implements IEntityAdapter
         $dbalPatient->setName($patient->getName()->getValue());
         $dbalPatient->setSpecies($patient->getSpecies()->getValue());
         $dbalPatient->setBirthDate($patient->getBirthDate()->getValue());
-        $dbalPatient->setOwner($this->fromDomainOwner($patient->getOwner()));
+        $dbalPatient->setOwner($this->fromDomainOwner($this->halt($patient->getOwner())));
         $dbalPatient->setCards(new ArrayCollection(array_map(
             fn ($domainCard) => $this->fromDomainCard($domainCard),
             $patient->getCards()
@@ -121,7 +123,8 @@ class EntityAdapter implements IEntityAdapter
         $domainOwner = new DomainOwner(
             new OwnerName($this->halt($dbalOwner->getName())),
             new OwnerPhone($this->halt($dbalOwner->getPhone())),
-            new OwnerAddress($this->halt($dbalOwner->getAddress()))
+            new OwnerAddress($this->halt($dbalOwner->getAddress())),
+            new OwnerEmail($this->halt($dbalOwner->getEmail()))
         );
         $domainOwner->setId(new OwnerId($this->halt($dbalOwner->getId())));
         $domainOwner->setRegisteredAt(new OwnerRegisteredAt($this->halt($dbalOwner->getRegisteredAt())));

@@ -13,6 +13,7 @@ use App\Domain\Patient\ValueObject\CardId;
 use App\Domain\Patient\ValueObject\OwnerId;
 use App\Domain\Patient\ValueObject\OwnerName;
 use App\Domain\Patient\ValueObject\PatientId;
+use App\Domain\Patient\ValueObject\OwnerEmail;
 use App\Domain\Patient\ValueObject\OwnerPhone;
 use App\Domain\Patient\ValueObject\PatientName;
 use App\Domain\Patient\ValueObject\OwnerAddress;
@@ -31,7 +32,8 @@ class MedicalCaseTest extends TestCase
         $o = new Owner(
             new OwnerName("Uncle Sam"),
             new OwnerPhone("+79996767676"),
-            new OwnerAddress("NYC, 5th av.")
+            new OwnerAddress("NYC, 5th av."),
+            new OwnerEmail("sam@uncle.com")
         );
         $o->setId(new OwnerId(889));
         return $o;
@@ -95,7 +97,10 @@ class MedicalCaseTest extends TestCase
         static::assertInstanceOf(Card::class, $case->getCard());
         static::assertInstanceOf(Patient::class, $case->getCard()->getPatient());
         static::assertInstanceOf(Owner::class, $case->getCard()->getPatient()->getOwner());
-        static::assertNotEmpty($case->getCard()->getPatient()->getOwner()->getName());
+        $owner = $case->getCard()->getPatient()->getOwner();
+        static::assertNotNull($owner);
+        if (is_null($owner)) return;
+        static::assertNotEmpty($owner->getName());
     }
 
     public function testGetStartedAt(): void

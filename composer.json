@@ -14,8 +14,9 @@
         "webmozart/assert": "^1.7"
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.14",
-        "symfony/phpunit-bridge": "^5.0"
+        "symfony/maker-bundle": "^1.15",
+        "symfony/phpunit-bridge": "^5.0",
+        "symfony/test-pack": "^1.0"
     },
     "config": {
         "preferred-install": {
@@ -52,6 +53,16 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "test": [
+            "php ./bin/phpunit"
+        ],
+        "lint": [
+            "phpstan analyse -c ./phpstan.neon --memory-limit 500M src tests"
+        ],
+        "check": [
+            "@test",
+            "@lint"
         ]
     },
     "conflict": {

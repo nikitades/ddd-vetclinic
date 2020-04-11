@@ -4,6 +4,7 @@ namespace App\Application\Patient;
 
 use DateTime;
 use App\Domain\Patient\Entity\Card;
+use App\Domain\Patient\Entity\Owner;
 use App\Domain\Patient\Entity\Patient;
 use App\Domain\Patient\Entity\MedicalCase;
 use App\Domain\Patient\ValueObject\CardId;
@@ -20,6 +21,7 @@ use App\Domain\Patient\ValueObject\PatientSpecies;
 use App\Application\Patient\DTO\AddCardToPatientDTO;
 use App\Application\Patient\DTO\CloseMedicalCaseDTO;
 use App\Domain\Patient\ValueObject\PatientBirthDate;
+use App\Application\Patient\DTO\RequireNotificationDTO;
 use App\Domain\Patient\ValueObject\MedicalCaseTreatment;
 use App\Application\Patient\DTO\RemoveCardFromPatientDTO;
 use App\Domain\Patient\ValueObject\MedicalCaseDescription;
@@ -189,7 +191,24 @@ class PatientService
         return $this->patientRepo->updatePatient($patient);
     }
 
-    protected function fetchPatient(int $patientId, ?string $patientName, ?int $ownerId, ?string $ownerName): Patient
+    public function requireNotification(RequireNotificationDTO $requireNotificationDTO): Owner
+    {
+        $patient = $this->fetchPatient(
+            $requireNotificationDTO->patientId ?? null,
+            $requireNotificationDTO->patientName ?? null,
+            $requireNotificationDTO->ownerId ?? null,
+            $requireNotificationDTO->ownerName ?? null
+        );
+        $owner = $patient->getOwner();
+        if (empty($owner)) {
+            throw new OwnerNotFoundException();
+        }
+        $owner->enableNotification();
+        $this->patientRepo->updateOwner($owner);
+        return $owner;
+    }
+
+    protected function fetchPatient(?int $patientId, ?string $patientName, ?int $ownerId, ?string $ownerName): Patient
     {
         $getPatientDTO = new GetPatientDTO();
         $getPatientDTO->patientId = $patientId;

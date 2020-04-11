@@ -17,6 +17,7 @@ use App\Domain\Patient\ValueObject\PatientId;
 use App\Domain\Patient\ValueObject\OwnerPhone;
 use App\Domain\Patient\ValueObject\PatientName;
 use App\Domain\Patient\ValueObject\OwnerAddress;
+use App\Domain\Patient\ValueObject\OwnerEmail;
 use App\Domain\Patient\ValueObject\PatientSpecies;
 use App\Domain\Patient\ValueObject\PatientBirthDate;
 
@@ -27,7 +28,8 @@ class PatientTest extends TestCase
         $o = new Owner(
             new OwnerName("Haha benis"),
             new OwnerPhone("+73332224444"),
-            new OwnerAddress("ул. Пушкина, дом Колотушкина")
+            new OwnerAddress("ул. Пушкина, дом Колотушкина"),
+            new OwnerEmail("alex@liceum.tzar")
         );
         $o->setId(new OwnerId(555));
         return $o;

@@ -25,7 +25,7 @@ class Patient
     protected PatientName $name;
     protected PatientBirthDate $birthDate;
     protected PatientSpecies $species;
-    protected Owner $owner;
+    protected ?Owner $owner;
     /**
      * @var Card[]
      */
@@ -130,13 +130,14 @@ class Patient
         $this->cards = array_filter($this->cards, fn ($card) => !$card->getId()->equals($cardId));
     }
 
-    public function getOwner(): Owner
+    public function getOwner(): ?Owner
     {
         return $this->owner;
     }
 
     public function setOwner(Owner $owner): void
     {
+        $owner->addPatient($this);
         $this->owner = $owner;
     }
 

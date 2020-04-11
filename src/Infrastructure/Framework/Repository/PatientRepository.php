@@ -78,12 +78,14 @@ class PatientRepository extends ServiceEntityRepository
 
     public function update(Patient $patient): void
     {
+        $this->manager->persist($patient);
         $this->manager->flush(); //TODO: ??? мб можно как-то в одном месте в конце флаш вызывать?
     }
 
     public function remove(Patient $patient): void
     {
         $this->manager->remove($patient);
+        $this->manager->flush();
     }
 
     // /**

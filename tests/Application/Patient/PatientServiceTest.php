@@ -29,9 +29,12 @@ use App\Application\Patient\DTO\RemoveCardFromPatientDTO;
 use App\Application\Patient\DTO\AddMedicalCaseToPatientDTO;
 use App\Application\Patient\DTO\CloseMedicalCaseDTO;
 use App\Application\Patient\DTO\RemoveMedicalCaseFromPatientDTO;
+use App\Application\Patient\DTO\RequireNotificationDTO;
 use App\Domain\Patient\ValueObject\MedicalCaseDescription;
 use App\Domain\Patient\ValueObject\MedicalCaseId;
 use App\Domain\Patient\ValueObject\MedicalCaseTreatment;
+use App\Domain\Patient\ValueObject\OwnerEmail;
+use InvalidArgumentException;
 
 class PatientServiceTest extends TestCase
 {
@@ -50,21 +53,24 @@ class PatientServiceTest extends TestCase
         $this->owner1 = new Owner(
             new OwnerName("Sam"),
             new OwnerPhone("+79998887777"),
-            new OwnerAddress("5th Av.")
+            new OwnerAddress("5th Av."),
+            new OwnerEmail("egor@letov.su")
         );
         $this->owner1->setId(new OwnerId(403));
 
         $this->owner2 = new Owner(
             new OwnerName("Keanu"),
             new OwnerPhone("+73334442424"),
-            new OwnerAddress("Matrix")
+            new OwnerAddress("Matrix"),
+            new OwnerEmail("neo@matrix.com")
         );
         $this->owner2->setId(new OwnerId(38));
 
         $this->owner3 = new Owner(
             new OwnerName("Harry"),
             new OwnerPhone("+78889293030"),
-            new OwnerAddress("Hogwarts")
+            new OwnerAddress("Hogwarts"),
+            new OwnerEmail("potter@griffindor.hogwarts.wiz")
         );
         $this->owner3->setId(new OwnerId(707));
 
@@ -103,6 +109,12 @@ class PatientServiceTest extends TestCase
 
     private function createPatientService(bool $pegasusDeleted = false): PatientService
     {
+        if (
+            is_null($this->patient1->getOwner())
+            || is_null($this->patient2->getOwner())
+            || is_null($this->patient3->getOwner())
+        ) throw new InvalidArgumentException("A patient is expected to have the owner");
+
         /** @var mixed */
         $patientRepo = $this->createMock(IPatientRepository::class);
 
@@ -177,7 +189,14 @@ class PatientServiceTest extends TestCase
         $patient2 = $this->patient2;
         $patient3 = $this->patient3;
 
+        if (
+            is_null($patient1->getOwner())
+            || is_null($patient2->getOwner())
+            || is_null($patient3->getOwner())
+        ) throw new InvalidArgumentException("A patient is expected to have the owner");
+
         foreach ([$patient1, $patient2, $patient3] as $patient) {
+            if (is_null($patient->getOwner())) throw new InvalidArgumentException("A patient is expected to have the owner here");
             $addPatientDTO = $this->createAddPatientDTO(
                 $patient->getOwner()->getId()->getValue(),
                 $patient->getName()->getValue(),
@@ -213,9 +232,11 @@ class PatientServiceTest extends TestCase
 
         $patient1 = $this->patient1;
         $patient2 = $this->patient2;
+        if (is_null($patient2->getOwner())) throw new InvalidArgumentException("A patient is expected to have the owner here");
         $patient3 = $this->patient3;
 
         foreach ([$patient1, $patient2, $patient3] as $patient) {
+            if (is_null($patient->getOwner())) throw new InvalidArgumentException("A patient is expected to have the owner here");
             $addPatientDTO = $this->createAddPatientDTO(
                 $patient->getOwner()->getId()->getValue(),
                 $patient->getName()->getValue(),
@@ -417,7 +438,7 @@ class PatientServiceTest extends TestCase
         static::assertEmpty($card->getCases());
     }
 
-    public function closePatientsMedicalCase(): void
+    public function testClosePatientsMedicalCase(): void
     {
         $patientService = $this->createPatientService();
 
@@ -434,7 +455,8 @@ class PatientServiceTest extends TestCase
         static::assertCount(1, $card->getCases());
         /** @var MedicalCase */
         $case = $card->getCases()[0];
-        static::assertFalse($case->isEnded());
+        $ended = $case->isEnded();
+        static::assertFalse($ended->getValue());
 
         $closeMedicalCaseDTO = new CloseMedicalCaseDTO();
         $closeMedicalCaseDTO->patientId = $this->patient1->getId()->getValue();
@@ -455,6 +477,24 @@ class PatientServiceTest extends TestCase
         static::assertCount(1, $cases);
         /** @var MedicalCase */
         $case = $card->getCases()[0];
-        static::assertTrue($case->isEnded());
+        $ended = $case->isEnded();
+        if (empty($ended)) return;
+        static::assertTrue($ended->getValue());
+    }
+
+    public function testRequireNotification(): void
+    {
+        $patientService = $this->createPatientService();
+
+        $requireNotificationDTO = new RequireNotificationDTO();
+        $owner = $this->patient1->getOwner();
+        if (empty($owner)) return;
+        static::assertFalse($owner->getNotificationRequired()->getValue());
+        $requireNotificationDTO->ownerName = $owner->getName()->getValue();
+        $requireNotificationDTO->patientName = $this->patient1->getName()->getValue();
+
+        $patientService->requireNotification($requireNotificationDTO);
+
+        static::assertTrue($owner->getNotificationRequired()->getValue());
     }
 }

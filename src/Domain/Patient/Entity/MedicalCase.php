@@ -16,7 +16,7 @@ class MedicalCase
 
     public function __construct()
     {
-        $this->startedAt = new MedicalCaseStartedAt(new DateTime());
+        $this->startedAt = MedicalCaseStartedAt::now();
         $this->ended = new MedicalCaseEnded(false);
     }
 

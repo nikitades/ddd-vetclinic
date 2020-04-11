@@ -15,7 +15,7 @@ class Card
     public function __construct()
     {
         $this->closed = new CardClosed(false);
-        $this->createdAt = new CardCreatedAt(new DateTime());
+        $this->createdAt = CardCreatedAt::now();
     }
 
     protected CardId $id;

@@ -23,6 +23,7 @@ interface IPatientRepository
     public function getAllPatients(bool $onTreatment = true, bool $released = true): array;
 
     public function updatePatient(Patient $patient): Patient;
+    public function updateOwner(Owner $owner): Owner;
     
     // /**
     //  * @param Card[] $cards

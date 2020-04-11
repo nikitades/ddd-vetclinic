@@ -7,12 +7,18 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Application\Patient\DTO\GetPatientDTO;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Application\Patient\DTO\RequireNotificationDTO;
+use App\Application\Patient\Exception\OwnerNotFoundException;
+use App\Application\Patient\Exception\PatientNotFoundException;
+use App\Infrastructure\Framework\ApiResponse\PatientStateSuccessResponse;
+use App\Infrastructure\Framework\ApiResponse\PatientStateNotFoundResponse;
+use App\Infrastructure\Framework\ApiResponse\RequireNotificationFailedResponse;
+use App\Infrastructure\Framework\ApiResponse\RequireNotificationSuccessResponse;
 
 /**
  * @Route("/api")
  */
-class ApiController extends AbstractController
+class ApiController extends AbstractApiController
 {
     /**
      * @Route("/patients/state", name="patients.state", methods={"GET"})
@@ -31,12 +37,9 @@ class ApiController extends AbstractController
         $getPatientDTO->patientName = $patientName;
         $patient = $patientService->getPatient($getPatientDTO);
         if (empty($patient)) {
-            return $this->json([], 400);
+            return $this->apiResponse(new PatientStateNotFoundResponse());
         }
-        return $this->json([
-            'patient' => $patient,
-            'released' => $patient->isCured()
-        ]);
+        return $this->apiResponse(new PatientStateSuccessResponse($patient));
         /**
          * TODO: делаем апи с классами-ответами
          * 1. Create AdminApiController
@@ -53,5 +56,32 @@ class ApiController extends AbstractController
          *          - PUT /patients/release
          *          - GET /patients/onTreatment
          */
+    }
+
+    /**
+     * @Route("/patients/requireNotification", name="patients.requireNotification", methods={"POST"})
+     * @return Response
+     */
+    public function requireNotification(Request $request, PatientService $patientService): Response
+    {
+        $patientId = $request->request->get("patientId");
+        $patientName = $request->request->get("patientName");
+        $ownerId = $request->request->get("ownerId");
+        $ownerName = $request->request->get("ownerName");
+
+        $requireNotificationDTO = new RequireNotificationDTO();
+        $requireNotificationDTO->ownerId = $ownerId;
+        $requireNotificationDTO->ownerName = $ownerName;
+        $requireNotificationDTO->patientId = $patientId;
+        $requireNotificationDTO->patientName = $patientName;
+
+        try {
+            $owner = $patientService->requireNotification($requireNotificationDTO);
+        } catch (OwnerNotFoundException $e) {
+            return $this->apiResponse(new RequireNotificationFailedResponse("No owner found"));
+        } catch (PatientNotFoundException $e) {
+            return $this->apiResponse(new RequireNotificationFailedResponse("No patient found"));
+        }
+        return $this->apiResponse(new RequireNotificationSuccessResponse($owner));
     }
 }

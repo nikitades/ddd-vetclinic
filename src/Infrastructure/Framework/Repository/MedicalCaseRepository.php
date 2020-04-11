@@ -20,8 +20,7 @@ class MedicalCaseRepository extends ServiceEntityRepository
     public function __construct(
         ManagerRegistry $registry,
         EntityManagerInterface $entityManagerInterface
-        )
-    {
+    ) {
         parent::__construct($registry, MedicalCase::class);
         $this->entityManagerInterface = $entityManagerInterface;
     }
@@ -34,6 +33,12 @@ class MedicalCaseRepository extends ServiceEntityRepository
      */
     public function updateCases(array $cases)
     {
+        array_walk(
+            $cases,
+            function (MedicalCase $case) {
+                $this->entityManagerInterface->persist($case);
+            }
+        );
         $this->entityManagerInterface->flush();
     }
 
