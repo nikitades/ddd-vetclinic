@@ -22,7 +22,6 @@ use App\Application\Patient\DTO\CreateOwnerDTO;
 use App\Application\Patient\IPatientRepository;
 use App\Domain\Patient\ValueObject\PatientName;
 use App\Domain\Patient\ValueObject\OwnerAddress;
-use App\Application\Patient\DTO\CreatePatientDTO;
 use App\Application\Patient\DTO\RemovePatientDTO;
 use App\Domain\Patient\ValueObject\MedicalCaseId;
 use App\Application\Patient\DTO\GetAllPatientsDTO;
@@ -31,6 +30,7 @@ use App\Domain\Patient\ValueObject\PatientSpecies;
 use App\Application\Patient\DTO\AddCardToPatientDTO;
 use App\Application\Patient\DTO\CloseMedicalCaseDTO;
 use App\Domain\Patient\ValueObject\PatientBirthDate;
+use App\Application\Patient\DTO\GetPatientsByNameDTO;
 use App\Application\Patient\DTO\RequireNotificationDTO;
 use App\Application\Patient\DTO\AttachPatientToOwnerDTO;
 use App\Domain\Patient\ValueObject\MedicalCaseTreatment;
@@ -168,6 +168,10 @@ class PatientServiceTest extends TestCase
         $patientRepo
             ->method("createOwner")
             ->willReturn($this->patient2->getOwner());
+
+        $patientRepo
+            ->method("getAllPatientsWithName")
+            ->willReturn([$this->patient2]);
 
         return new PatientService($patientRepo);
     }
@@ -612,5 +616,19 @@ class PatientServiceTest extends TestCase
         $attachPatientToOwnerDTO->ownerId = $owner->getId()->getValue();
 
         $patientService->attachPatientToOwner($attachPatientToOwnerDTO);
+    }
+
+    public function testGetPatientByName(): void
+    {
+        $patientService = $this->createPatientService();
+
+        $patient = $this->patient2;
+
+        $getPatientsByNameDTO = new GetPatientsByNameDTO($patient->getName()->getValue());
+        $patients = $patientService->getPatientsByName($getPatientsByNameDTO);
+
+        static::assertIsArray($patients);
+        static::assertNotEmpty($patients);
+        static::assertContains($patient, $patients);
     }
 }

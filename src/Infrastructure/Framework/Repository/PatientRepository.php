@@ -70,6 +70,20 @@ class PatientRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
+    /**
+     * Fetches all the patients with the name matching the given one
+     *
+     * @param string $name
+     * @return Patient[]
+     */
+    public function getAllWithName(string $name): array
+    {
+        $query = $this->createQueryBuilder('p')
+            ->where('c.name = :name')
+            ->setParameter('name', $name);
+        return $query->getQuery()->getResult();
+    }
+
     public function create(Patient $patient): Patient
     {
         $this->manager->persist($patient);

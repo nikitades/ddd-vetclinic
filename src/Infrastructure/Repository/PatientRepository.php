@@ -101,6 +101,17 @@ class PatientRepository implements IPatientRepository
         );
     }
 
+    /**
+     * @return Patient[]
+     */
+    public function getAllPatientsWithName(string $name): array
+    {
+        return array_map(
+            fn ($dbalPatient) => $this->adapter->fromDBALPatient($dbalPatient),
+            $this->dbalPatientRepository->getAllWithName($name)
+        );
+    }
+
     public function updatePatient(Patient $patient): Patient
     {
         $dbalPatient = $this->adapter->fromDomainPatient($patient);

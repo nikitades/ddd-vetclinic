@@ -34,64 +34,18 @@ use App\Infrastructure\Framework\ApiResponse\CreateOwnerSuccessResponse;
 use App\Infrastructure\Framework\ApiResponse\CreatePatientSuccessResponse;
 use App\Infrastructure\Framework\ApiResponse\AddPatientToOwnerFailedResponse;
 use App\Infrastructure\Framework\ApiResponse\AddPatientToOwnerSuccessResponse;
+use App\Test\EntityGenerator;
 
 class AdminApiControllerTest extends WebTestCase
 {
+    use EntityGenerator;
+    
     public function __construct()
     {
         parent::__construct(...func_get_args());
     }
+
     /** PREP */
-
-    private function createOwner(): Owner
-    {
-        $owner = new Owner(
-            new OwnerName("Jim"),
-            new OwnerPhone("+73423948989"),
-            new OwnerAddress("Haha st."),
-            new OwnerEmail("worm@earth.sega")
-        );
-        $owner->setId(new OwnerId(43));
-        $owner->setRegisteredAt(new OwnerRegisteredAt(new DateTime("1999-12-01")));
-        return $owner;
-    }
-
-    private function createCard(): Card
-    {
-        $card = new Card();
-        $card->setId(new CardId(44));
-        $card->addCase($this->createCase());
-        return $card;
-    }
-
-    private function createCase(): MedicalCase
-    {
-        $case = new MedicalCase();
-        $case->setDescription(new MedicalCaseDescription("Hoho"));
-        $case->setTreatment(new MedicalCaseTreatment("haha"));
-        $case->setId(new MedicalCaseId(21));
-        return $case;
-    }
-
-    private function createPatient(): Patient
-    {
-        $patient = new Patient(
-            new PatientName("Carl"),
-            new PatientBirthDate(new DateTime("2000-01-01")),
-            new PatientSpecies("Horse")
-        );
-        $patient->setId(new PatientId(23));
-        $patient->addCard($this->createCard());
-        $patient->setOwner($this->createOwner());
-        return $patient;
-    }
-
-    private function getContainer(): ContainerInterface
-    {
-        static::bootKernel();
-        $container = static::$kernel->getContainer();
-        return $container;
-    }
 
     /**
      *

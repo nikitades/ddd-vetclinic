@@ -26,12 +26,13 @@ use App\Domain\Patient\ValueObject\PatientSpecies;
 use App\Application\Patient\DTO\AddCardToPatientDTO;
 use App\Application\Patient\DTO\CloseMedicalCaseDTO;
 use App\Domain\Patient\ValueObject\PatientBirthDate;
+use App\Application\Patient\DTO\GetPatientsByNameDTO;
 use App\Application\Patient\DTO\RequireNotificationDTO;
+use App\Application\Patient\DTO\AttachPatientToOwnerDTO;
 use App\Domain\Patient\ValueObject\MedicalCaseTreatment;
 use App\Application\Patient\DTO\RemoveCardFromPatientDTO;
 use App\Domain\Patient\ValueObject\MedicalCaseDescription;
 use App\Application\Patient\DTO\AddMedicalCaseToPatientDTO;
-use App\Application\Patient\DTO\AttachPatientToOwnerDTO;
 use App\Application\Patient\Exception\OwnerNotFoundException;
 use App\Application\Patient\Exception\PatientNotFoundException;
 use App\Application\Patient\DTO\RemoveMedicalCaseFromPatientDTO;
@@ -85,6 +86,11 @@ class PatientService
     public function getAllPatients(GetAllPatientsDTO $getAllPatientsDTO): array
     {
         return $this->patientRepo->getAllPatients($getAllPatientsDTO->onTreatment, $getAllPatientsDTO->released);
+    }
+
+    public function getPatientsByName(GetPatientsByNameDTO $getPatientsByNameDTO): array
+    {
+        return $this->patientRepo->getAllPatientsWithName($getPatientsByNameDTO->patientName);
     }
 
     public function createOwner(CreateOwnerDTO $createOwnerDTO): Owner

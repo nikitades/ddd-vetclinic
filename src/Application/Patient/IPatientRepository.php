@@ -19,10 +19,10 @@ interface IPatientRepository
     public function getPatientById(int $patientId): ?Patient;
     public function getOwnerById(int $ownerId): ?Owner;
 
-    /**
-     * @return Patient[]
-     */
+    /** @return Patient[] */
     public function getAllPatients(bool $onTreatment = true, bool $released = true): array;
+    /** @return Patient[] */
+    public function getAllPatientsWithName(string $name): array;
 
     public function updatePatient(Patient $patient): Patient;
     public function updateOwner(Owner $owner): Owner;
