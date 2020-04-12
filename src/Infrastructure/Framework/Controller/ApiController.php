@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Framework\Controller;
 
+use InvalidArgumentException;
 use App\Application\Patient\PatientService;
 use Symfony\Component\HttpFoundation\Request;
 use App\Application\Patient\DTO\GetPatientDTO;
@@ -35,7 +36,11 @@ class ApiController extends AbstractApiController
         $getPatientDTO->ownerName = $ownerName;
         $getPatientDTO->patientId = $patientId;
         $getPatientDTO->patientName = $patientName;
-        $patient = $patientService->getPatient($getPatientDTO);
+        try {
+            $patient = $patientService->getPatient($getPatientDTO);
+        } catch (InvalidArgumentException $e) {
+            $this->apiResponse(new PatientStateNotFoundResponse($e->getMessage()));
+        }
         if (empty($patient)) {
             return $this->apiResponse(new PatientStateNotFoundResponse());
         }

@@ -88,6 +88,10 @@ class PatientService
         return $this->patientRepo->getAllPatients($getAllPatientsDTO->onTreatment, $getAllPatientsDTO->released);
     }
 
+    /**
+     * @param GetPatientsByNameDTO $getPatientsByNameDTO
+     * @return Patient[]
+     */
     public function getPatientsByName(GetPatientsByNameDTO $getPatientsByNameDTO): array
     {
         return $this->patientRepo->getAllPatientsWithName($getPatientsByNameDTO->patientName);

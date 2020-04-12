@@ -30,7 +30,6 @@ use App\Domain\Patient\Entity\MedicalCase as DomainMedicalCase;
 use App\Infrastructure\Framework\Entity\Patient as DBALPatient;
 use App\Infrastructure\Framework\Entity\MedicalCase as DBALMedicalCase;
 
-//TODO: test this
 class EntityAdapter implements IEntityAdapter
 {
     public function fromDomainCard(DomainCard $domainCard): DBALCard

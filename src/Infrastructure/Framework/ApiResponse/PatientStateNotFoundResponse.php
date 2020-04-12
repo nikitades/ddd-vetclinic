@@ -4,6 +4,13 @@ namespace App\Infrastructure\Framework\ApiResponse;
 
 class PatientStateNotFoundResponse extends AbstractApiResponse
 {
+    private string $msg;
+
+    public function __construct(string $msg = "The patient was not found")
+    {
+        $this->msg = $msg;
+    }
+
     public function getStatusCode(): int
     {
         return 400;
@@ -17,7 +24,7 @@ class PatientStateNotFoundResponse extends AbstractApiResponse
     public function getHeaders(): array
     {
         return [
-            "Error" => "The patient was not found"
+            "Error" => $this->msg
         ];
     }
 

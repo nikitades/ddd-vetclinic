@@ -85,6 +85,11 @@ The concepts:
 
 ### Routes to implement
 
+    Public:
+    V   - GET /patients/state
+    V   - GET /patients/requireNotification
+
+    Admin: 
     V   - POST /patients
     V   - POST /owners
     V   - PUT /patients/:id/attachOwner
