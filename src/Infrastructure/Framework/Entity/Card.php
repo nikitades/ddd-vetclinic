@@ -29,7 +29,7 @@ class Card
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Infrastructure\Framework\Entity\Patient", inversedBy="cards")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private ?Patient $patient;
 
@@ -40,7 +40,7 @@ class Card
     private Collection $cases;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private int $patientId;
 

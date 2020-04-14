@@ -37,8 +37,8 @@ class Patient
     private string $species;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Infrastructure\Framework\Entity\Owner", inversedBy="patients", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\ManyToOne(targetEntity="App\Infrastructure\Framework\Entity\Owner", inversedBy="patients")
+     * @ORM\JoinColumn(nullable=true, onDelete="RESTRICT")
      */
     private ?Owner $owner = null;
 

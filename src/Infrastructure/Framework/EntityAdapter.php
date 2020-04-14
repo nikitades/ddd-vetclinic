@@ -133,16 +133,18 @@ class EntityAdapter implements IEntityAdapter
         return $dbalPatient;
     }
 
-    public function fromDBALCard(DBALCard $dbalCard): DomainCard
+    public function fromDBALCard(DBALCard $dbalCard, bool $withCases = true): DomainCard
     {
         $domainCard = new DomainCard();
         $domainCard->setId(new CardId($this->halt($dbalCard->getId())));
         $domainCard->setCreatedAt(new CardCreatedAt($this->halt($dbalCard->getCreatedAt())));
-        $domainCard->setPatient($this->fromDBALPatient($this->halt($dbalCard->getPatient())));
-        $domainCard->setCases(array_map(
-            fn ($dbalMedicalCase) => $this->fromDBALMedicalCase($dbalMedicalCase),
-            $dbalCard->getCases()->toArray()
-        ));
+        $domainCard->setPatient($this->fromDBALPatient($this->halt($dbalCard->getPatient()), false));
+        if ($withCases) {
+            $domainCard->setCases(array_map(
+                fn ($dbalMedicalCase) => $this->fromDBALMedicalCase($dbalMedicalCase),
+                $dbalCard->getCases()->toArray()
+            ));
+        }
         return $domainCard;
     }
 
@@ -159,7 +161,7 @@ class EntityAdapter implements IEntityAdapter
         return $domainMedicalCase;
     }
 
-    public function fromDBALOwner(DBALOwner $dbalOwner): DomainOwner
+    public function fromDBALOwner(DBALOwner $dbalOwner, bool $withPatients = true): DomainOwner
     {
         $domainOwner = new DomainOwner(
             new OwnerName($this->halt($dbalOwner->getName())),
@@ -169,14 +171,16 @@ class EntityAdapter implements IEntityAdapter
         );
         $domainOwner->setId(new OwnerId($this->halt($dbalOwner->getId())));
         $domainOwner->setRegisteredAt(new OwnerRegisteredAt($this->halt($dbalOwner->getRegisteredAt())));
-        $domainOwner->setPatients(array_map(
-            fn ($dbalPatient) => $this->fromDBALPatient($dbalPatient),
-            $dbalOwner->getPatients()->toArray()
-        ));
+        if ($withPatients) {
+            $domainOwner->setPatients(array_map(
+                fn ($dbalPatient) => $this->fromDBALPatient($dbalPatient),
+                $dbalOwner->getPatients()->toArray()
+            ));
+        }
         return $domainOwner;
     }
 
-    public function fromDBALPatient(DBALPatient $dbalPatient): DomainPatient
+    public function fromDBALPatient(DBALPatient $dbalPatient, bool $withCards = true): DomainPatient
     {
         $domainPatient = new DomainPatient(
             new PatientName($this->halt($dbalPatient->getName())),
@@ -186,12 +190,14 @@ class EntityAdapter implements IEntityAdapter
         $domainPatient->setId(new PatientId($this->halt($dbalPatient->getId())));
         $owner = $dbalPatient->getOwner();
         if (!empty($owner)) {
-            $domainPatient->setOwner($this->fromDBALOwner($owner));
+            $domainPatient->setOwner($this->fromDBALOwner($owner, false));
         }
-        $domainPatient->setCards(array_map(
-            fn ($dbalCard) => $this->fromDBALCard($dbalCard),
-            $dbalPatient->getCards()->toArray()
-        ));
+        if ($withCards) {
+            $domainPatient->setCards(array_map(
+                fn ($dbalCard) => $this->fromDBALCard($dbalCard),
+                $dbalPatient->getCards()->toArray()
+            ));
+        }
         return $domainPatient;
     }
 

@@ -41,9 +41,11 @@ class GetPatientStateCommand extends Command
         /** @var int|string */
         $id = $input->getArgument('id');
 
-        if (is_int($id)) {
+
+        $intId = (int) $id;
+        if ($intId > 0) {
             $getPatientDTO = new GetPatientDTO();
-            $getPatientDTO->patientId = $id;
+            $getPatientDTO->patientId = $intId;
             $patient = $this->patientService->getPatient($getPatientDTO);
             if (!empty($patient)) {
                 $this->result($io, $patient, true);
@@ -51,13 +53,11 @@ class GetPatientStateCommand extends Command
             }
         }
 
-        if (is_string($id)) {
-            $getAllPatientsByNameDTO = new GetPatientsByNameDTO($id);
-            $patients = $this->patientService->getPatientsByName($getAllPatientsByNameDTO);
-            foreach ($patients as $patient) {
-                $this->result($io, $patient, false);
-                return 0;
-            }
+        $getAllPatientsByNameDTO = new GetPatientsByNameDTO((string) $id);
+        $patients = $this->patientService->getPatientsByName($getAllPatientsByNameDTO);
+        foreach ($patients as $patient) {
+            $this->result($io, $patient, false);
+            return 0;
         }
 
         $this->badResult($io, $id);

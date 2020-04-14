@@ -79,29 +79,63 @@ class PatientRepository extends ServiceEntityRepository
     public function getAllWithName(string $name): array
     {
         $query = $this->createQueryBuilder('p')
-            ->where('c.name = :name')
+            ->where('p.name = :name')
             ->setParameter('name', $name);
         return $query->getQuery()->getResult();
     }
 
     public function create(Patient $patient): Patient
     {
-        //TODO: implement the raw queries! ORM is unuseful when working with DDD
         $this->manager->persist($patient);
         $this->manager->flush();
         return $patient;
     }
 
+    /**
+     * Since we're bound to constant domain model <-> dbal model conversions,
+     * Entity Manager's built-in entity tracking mechanism fails. Once having fetched the dbal entity,
+     * we send it somewhere to the application level converted to the domain model.
+     * Then, being modified, it comes back, again transformed to the dbal entity. And this is another dbal entity instance,
+     * not the one Doctrine Entity Manager knows about.
+     * 
+     * And thus it's not updated. Or in some cases we are getting clones created.
+     * So we have to handle updates and removals manually.
+     * 
+     * Probably should have used something like yaml ORM entity description
+     * to use the same class both for domain level and for DBAL.
+     *
+     * @param Patient $patient
+     * @return void
+     */
     public function update(Patient $patient): void
     {
-        $this->manager->persist($patient);
-        $this->manager->flush();
+        $name = $patient->getName();
+        $species = $patient->getSpecies();
+        $birthDate = $patient->getBirthDate();
+        $ownerId = $patient->getOwnerId();
+        $id = $patient->getId();
+        $patientClass = Patient::class;
+        $dqlQuery = $this->manager->createQuery("UPDATE $patientClass p 
+            SET
+                p.name = :name,
+                p.species = :species,
+                p.birthDate = :birthDate,
+                p.ownerId = :ownerId
+            WHERE p.id = :id")
+            ->setParameter("name", $name)
+            ->setParameter("species", $species)
+            ->setParameter("birthDate", $birthDate)
+            ->setParameter("ownerId", $ownerId)
+            ->setParameter("id", $id);
+        $dqlQuery->execute();
     }
 
     public function remove(Patient $patient): void
     {
-        $this->manager->remove($patient);
-        $this->manager->flush();
+        $id = $patient->getId();
+        $this->manager->createQuery("DELETE FROM {$this->getEntityName()} p WHERE p.Id = :id")
+            ->setParameter("id", $id)
+            ->execute();
     }
 
     // /**

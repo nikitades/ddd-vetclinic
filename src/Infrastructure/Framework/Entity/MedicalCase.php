@@ -46,7 +46,7 @@ class MedicalCase
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Infrastructure\Framework\Entity\Card", inversedBy="cases")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
     private ?Card $card;
 

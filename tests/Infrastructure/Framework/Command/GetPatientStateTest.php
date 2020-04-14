@@ -75,7 +75,7 @@ class GetPatientStateTest extends KernelTestCase
         $output = new ConsoleOutput();
         $io = new SymfonyStyle($input, $output);
 
-        $expectedOutput = (new GetPatientStateSuccessResponse($io, $patient, true))->getResponse();
+        $expectedOutput = (new GetPatientStateSuccessResponse($io, $patient, false))->getResponse();
         $realOutput = $commandTester->getDisplay();
         $this->assertEquals($expectedOutput, $realOutput);
     }

@@ -22,7 +22,7 @@ final class GetPatientStateSuccessResponse extends AbstractCliResponse
         if (empty($io)) $io = $this->io;
         $owner = $this->patient->getOwner();
         $belongsTo = $owner ? $owner->getName()->getValue() : "<none>";
-        $io->comment("Found by: " . $this->byId ? "ID" : "Name");
+        $io->comment("Found by: " . ($this->byId ? "ID" : "Name"));
         $io->title($this->patient->getName()->getValue());
         $io->table(
             ["Field", "Value"],
