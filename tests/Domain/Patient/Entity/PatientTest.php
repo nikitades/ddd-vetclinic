@@ -92,7 +92,10 @@ class PatientTest extends TestCase
         $cards = $patient->getCards();
         static::assertCount(1, $cards);
         $card = $cards[0];
-        $patient->removeCard($card->getId());
+        $cardId = $card->getId();
+        static::assertNotEmpty($cardId);
+        if (empty($cardId)) return;
+        $patient->removeCard($cardId);
         static::assertCount(0, $patient->getCards());
     }
 

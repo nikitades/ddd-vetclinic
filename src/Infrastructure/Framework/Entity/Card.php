@@ -2,14 +2,16 @@
 
 namespace App\Infrastructure\Framework\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use App\Infrastructure\Framework\Entity\MedicalCase;
 use DateTimeInterface;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Infrastructure\Framework\Entity\MedicalCase;
 
 /**
  * @ORM\Entity(repositoryClass="App\Infrastructure\Framework\Repository\CardRepository")
+ * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class Card
 {
@@ -33,9 +35,14 @@ class Card
 
     /**
      * @var Collection<mixed,MedicalCase>|MedicalCase[]
-     * @ORM\OneToMany(targetEntity="App\Infrastructure\Framework\Entity\MedicalCase", mappedBy="card")
+     * @ORM\OneToMany(targetEntity="App\Infrastructure\Framework\Entity\MedicalCase", mappedBy="card", fetch="EAGER")
      */
     private Collection $cases;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private int $patientId;
 
     public function __construct()
     {
@@ -118,6 +125,18 @@ class Card
                 $case->setCard(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPatientId(): ?int
+    {
+        return $this->patientId;
+    }
+
+    public function setPatientId(int $patientId): self
+    {
+        $this->patientId = $patientId;
 
         return $this;
     }

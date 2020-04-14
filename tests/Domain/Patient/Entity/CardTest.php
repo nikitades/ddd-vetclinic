@@ -62,7 +62,10 @@ class CardTest extends TestCase
         $card = new Card();
         $card->setId($cardId);
         $card->setPatient($patient);
-        static::assertEquals($cardId->getValue(), $card->getId()->getValue());
+        $cardId = $card->getId();
+        static::assertNotEmpty($cardId);
+        if (empty($cardId)) return;
+        static::assertEquals($cardId->getValue(), $cardId->getValue());
         static::assertNotNull($card->getPatient());
         static::assertEquals($card->getPatient(), $patient);
     }
@@ -100,7 +103,10 @@ class CardTest extends TestCase
         static::assertContainsOnly(MedicalCase::class, $card->getCases());
         static::assertCount(3, $card->getCases());
 
-        $card->removeCase($case2->getId());
+        $caseId = $case2->getId();
+        static::assertNotEmpty($caseId);
+        if (empty($caseId)) return;
+        $card->removeCase($caseId);
         static::assertCount(2, $card->getCases());
         $newCases = array_values($card->getCases()); //to restore the numeration
         static::assertEquals($newCases[0]->getId(), $case1->getId());
@@ -136,7 +142,10 @@ class CardTest extends TestCase
 
         static::assertNotNull($card->getPatient());
         static::assertInstanceOf(Patient::class, $card->getPatient());
-        static::assertGreaterThan(0, $card->getPatient()->getId()->getValue());
+        $patientId = $card->getPatient()->getId();
+        static::assertNotEmpty($patientId);
+        if (empty($patientId)) return;
+        static::assertGreaterThan(0, $patientId->getValue());
     }
 
     public function testGetCreatedAt(): void

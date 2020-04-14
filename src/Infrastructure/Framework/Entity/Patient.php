@@ -2,13 +2,15 @@
 
 namespace App\Infrastructure\Framework\Entity;
 
-use App\Infrastructure\Framework\Entity\Card;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
+use App\Infrastructure\Framework\Entity\Card;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 
 /**
  * @ORM\Entity(repositoryClass="App\Infrastructure\Framework\Entity\PatientRepository")
+ * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class Patient
 {
@@ -35,16 +37,21 @@ class Patient
     private string $species;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Infrastructure\Framework\Entity\Owner", inversedBy="patients")
+     * @ORM\ManyToOne(targetEntity="App\Infrastructure\Framework\Entity\Owner", inversedBy="patients", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
-    private ?Owner $owner;
+    private ?Owner $owner = null;
 
     /**
      * @var Collection<mixed,Card>
-     * @ORM\OneToMany(targetEntity="App\Infrastructure\Framework\Entity\Card", mappedBy="patient")
+     * @ORM\OneToMany(targetEntity="App\Infrastructure\Framework\Entity\Card", mappedBy="patient", fetch="EAGER")
      */
     private Collection $cards;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private ?int $ownerId;
 
     public function getId(): ?int
     {
@@ -146,6 +153,18 @@ class Patient
                 $card->setPatient(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOwnerId(): ?int
+    {
+        return $this->ownerId;
+    }
+
+    public function setOwnerId(?int $ownerId): self
+    {
+        $this->ownerId = $ownerId;
 
         return $this;
     }

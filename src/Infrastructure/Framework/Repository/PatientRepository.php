@@ -86,6 +86,7 @@ class PatientRepository extends ServiceEntityRepository
 
     public function create(Patient $patient): Patient
     {
+        //TODO: implement the raw queries! ORM is unuseful when working with DDD
         $this->manager->persist($patient);
         $this->manager->flush();
         return $patient;

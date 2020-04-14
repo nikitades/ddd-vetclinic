@@ -124,9 +124,9 @@ class PatientServiceTest extends TestCase
         $patientRepo
             ->method("getOwnerById")
             ->willReturnMap([
-                [$this->owner1->getId()->getValue(), $this->owner1],
-                [$this->owner2->getId()->getValue(), $this->owner2],
-                [$this->owner3->getId()->getValue(), $this->owner3],
+                [$this->safelyGetId($this->owner1)->getValue(), $this->owner1],
+                [$this->safelyGetId($this->owner2)->getValue(), $this->owner2],
+                [$this->safelyGetId($this->owner3)->getValue(), $this->owner3],
             ]);
 
 
@@ -149,16 +149,16 @@ class PatientServiceTest extends TestCase
         $patientRepo
             ->method("getPatientByNameAndOwnerId")
             ->willReturnMap([
-                [$this->patient2->getName()->getValue(), $this->patient2->getOwner()->getId()->getValue(), $this->patient2],
-                [$this->patient3->getName()->getValue(), $this->patient3->getOwner()->getId()->getValue(), $this->patient3]
+                [$this->patient2->getName()->getValue(), $this->safelyGetId($this->patient2->getOwner())->getValue(), $this->patient2],
+                [$this->patient3->getName()->getValue(), $this->safelyGetId($this->patient3->getOwner())->getValue(), $this->patient3]
             ]);
 
         $patientRepo
             ->method("getPatientById")
             ->willReturnMap([
-                [$this->patient1->getId()->getValue(), $this->patient1],
-                [$this->patient2->getId()->getValue(), $this->patient2],
-                [$this->patient3->getId()->getValue(), $this->patient3],
+                [$this->safelyGetId($this->patient1)->getValue(), $this->patient1],
+                [$this->safelyGetId($this->patient2)->getValue(), $this->patient2],
+                [$this->safelyGetId($this->patient3)->getValue(), $this->patient3],
             ]);
 
         $patientRepo
@@ -183,6 +183,18 @@ class PatientServiceTest extends TestCase
             $dogSpecies,
             $dogBirthDate
         );
+    }
+
+    /**
+     *
+     * @param mixed $entity
+     * @return mixed
+     */
+    private function safelyGetId($entity)
+    {
+        $id = $entity->getId();
+        if (is_null($id)) throw new InvalidArgumentException("No id found");
+        return $id;
     }
 
     public function testGetAllPatients(): void
@@ -227,7 +239,7 @@ class PatientServiceTest extends TestCase
         if (empty($unreleasedPatient)) return;
 
         $releasePatientDTO = new ReleasePatientDTO(
-            $unreleasedPatient->getId()->getValue()
+            $this->safelyGetId($unreleasedPatient)->getValue()
         );
         $patientService->releasePatient($releasePatientDTO);
 
@@ -266,7 +278,7 @@ class PatientServiceTest extends TestCase
         if (empty($unreleasedPatient)) return;
 
         $releasePatientDTO = new ReleasePatientDTO(
-            $unreleasedPatient->getId()->getValue()
+            $this->safelyGetId($unreleasedPatient)->getValue()
         );
         $patientService->releasePatient($releasePatientDTO);
 
@@ -293,7 +305,7 @@ class PatientServiceTest extends TestCase
 
         $getPatientDTO = new GetPatientDTO();
         $getPatientDTO->patientName = $dogName;
-        $getPatientDTO->ownerId = $owner->getId()->getValue();
+        $getPatientDTO->ownerId = $this->safelyGetId($owner)->getValue();
 
         $patient = $patientService->getPatient($getPatientDTO);
         static::assertNotNull($patient);
@@ -339,10 +351,10 @@ class PatientServiceTest extends TestCase
     {
         $patientService = $this->createPatientService();
         $addCardToPatientDTO = new AddCardToPatientDTO();
-        $addCardToPatientDTO->patientId = $this->patient2->getId()->getValue();
+        $addCardToPatientDTO->patientId = $this->safelyGetId($this->patient2)->getValue();
         $patientService->addCardToPatient($addCardToPatientDTO);
         $getPatientDTO = new GetPatientDTO();
-        $getPatientDTO->patientId = $this->patient2->getId()->getValue();
+        $getPatientDTO->patientId = $this->safelyGetId($this->patient2)->getValue();
         $patient = $patientService->getPatient($getPatientDTO);
         static::assertNotNull($patient);
         static::assertInstanceOf(Patient::class, $patient);
@@ -357,7 +369,7 @@ class PatientServiceTest extends TestCase
         $patientService = $this->createPatientService();
 
         $getPatientDTO = new GetPatientDTO();
-        $getPatientDTO->patientId = $this->patient1->getId()->getValue();
+        $getPatientDTO->patientId = $this->safelyGetId($this->patient1)->getValue();
         $patient = $patientService->getPatient($getPatientDTO);
         static::assertInstanceOf(Patient::class, $patient);
         static::assertNotNull($patient);
@@ -368,8 +380,11 @@ class PatientServiceTest extends TestCase
         if (empty($card)) return;
 
         $removeCardFromPatientDTO = new RemoveCardFromPatientDTO();
-        $removeCardFromPatientDTO->patientId = $patient->getId()->getValue();
-        $removeCardFromPatientDTO->cardId = $card->getId()->getValue();
+        $removeCardFromPatientDTO->patientId = $this->safelyGetId($patient)->getValue();
+        $cardId = $card->getId();
+        static::assertNotEmpty($cardId);
+        if (empty($cardId)) return;
+        $removeCardFromPatientDTO->cardId = $cardId->getValue();
 
         $patientService->removeCardFromPatient($removeCardFromPatientDTO);
 
@@ -385,7 +400,7 @@ class PatientServiceTest extends TestCase
         $patientService = $this->createPatientService();
 
         $getPatientDTO = new GetPatientDTO();
-        $getPatientDTO->patientId = $this->patient1->getId()->getValue();
+        $getPatientDTO->patientId = $this->safelyGetId($this->patient1)->getValue();
         $patient = $patientService->getPatient($getPatientDTO);
         static::assertNotNull($patient);
         static::assertInstanceOf(Patient::class, $patient);
@@ -400,7 +415,7 @@ class PatientServiceTest extends TestCase
         $caseTreatment = "Make him go joggin twice a day";
 
         $addMedicalCaseToPatientDTO = new AddMedicalCaseToPatientDTO();
-        $addMedicalCaseToPatientDTO->patientId = $this->patient1->getId()->getValue();
+        $addMedicalCaseToPatientDTO->patientId = $this->safelyGetId($this->patient1)->getValue();
         $addMedicalCaseToPatientDTO->caseDescription = $caseDesc;
         $addMedicalCaseToPatientDTO->caseTreatment = $caseTreatment;
         $patientService->addMedicalCaseToPatient($addMedicalCaseToPatientDTO);
@@ -421,7 +436,7 @@ class PatientServiceTest extends TestCase
         $patientService = $this->createPatientService();
 
         $getPatientDTO = new GetPatientDTO();
-        $getPatientDTO->patientId = $this->patient1->getId()->getValue();
+        $getPatientDTO->patientId = $this->safelyGetId($this->patient1)->getValue();
         $patient = $patientService->getPatient($getPatientDTO);
         static::assertNotNull($patient);
         static::assertInstanceOf(Patient::class, $patient);
@@ -435,8 +450,8 @@ class PatientServiceTest extends TestCase
         $case = $card->getCases()[0];
 
         $removeMedicalCaseFromPatientDTO = new RemoveMedicalCaseFromPatientDTO();
-        $removeMedicalCaseFromPatientDTO->patientId = $this->patient1->getId()->getValue();
-        $removeMedicalCaseFromPatientDTO->medicalCaseId = $case->getId()->getValue();
+        $removeMedicalCaseFromPatientDTO->patientId = $this->safelyGetId($this->patient1)->getValue();
+        $removeMedicalCaseFromPatientDTO->medicalCaseId = $this->safelyGetId($case)->getValue();
         $patientService->removeMedicalCaseFromPatient($removeMedicalCaseFromPatientDTO);
 
         $patient = $patientService->getPatient($getPatientDTO);
@@ -455,7 +470,7 @@ class PatientServiceTest extends TestCase
         $patientService = $this->createPatientService();
 
         $getPatientDTO = new GetPatientDTO();
-        $getPatientDTO->patientId = $this->patient1->getId()->getValue();
+        $getPatientDTO->patientId = $this->safelyGetId($this->patient1)->getValue();
         $patient = $patientService->getPatient($getPatientDTO);
         static::assertNotNull($patient);
         static::assertInstanceOf(Patient::class, $patient);
@@ -471,8 +486,8 @@ class PatientServiceTest extends TestCase
         static::assertFalse($ended->getValue());
 
         $closeMedicalCaseDTO = new CloseMedicalCaseDTO();
-        $closeMedicalCaseDTO->patientId = $this->patient1->getId()->getValue();
-        $closeMedicalCaseDTO->medicalCaseId = $case->getId()->getValue();
+        $closeMedicalCaseDTO->patientId = $this->safelyGetId($this->patient1)->getValue();
+        $closeMedicalCaseDTO->medicalCaseId = $this->safelyGetId($case)->getValue();
 
         $patientService->closePatientsMedicalCase($closeMedicalCaseDTO);
 
@@ -526,7 +541,7 @@ class PatientServiceTest extends TestCase
         static::assertInstanceOf(Patient::class, $patient);
 
         $getPatientDTO = new GetPatientDTO();
-        $getPatientDTO->patientId = $patient->getId()->getValue();
+        $getPatientDTO->patientId = $this->safelyGetId($patient)->getValue();
         $newPatient = $patientService->getPatient($getPatientDTO);
         static::assertNotNull($newPatient);
         static::assertInstanceOf(Patient::class, $newPatient);
@@ -565,8 +580,8 @@ class PatientServiceTest extends TestCase
         if (empty($owner)) return;
 
         $attachPatientToOwnerDTO = new AttachPatientToOwnerDTO();
-        $attachPatientToOwnerDTO->patientId = $patient->getId()->getValue();
-        $attachPatientToOwnerDTO->ownerId = $owner->getId()->getValue();
+        $attachPatientToOwnerDTO->patientId = $this->safelyGetId($patient)->getValue();
+        $attachPatientToOwnerDTO->ownerId = $this->safelyGetId($owner)->getValue();
 
         /** array<mixed> */
         $result = $patientService->attachPatientToOwner($attachPatientToOwnerDTO);
@@ -577,11 +592,11 @@ class PatientServiceTest extends TestCase
 
         static::assertNotNull($attachedPatient);
         static::assertInstanceOf(Patient::class, $attachedPatient);
-        static::assertTrue($attachedPatient->getId()->equals($patient->getId()));
+        static::assertTrue($this->safelyGetId($attachedPatient)->equals($patient->getId()));
 
         static::assertNotNull($attachedOwner);
         static::assertInstanceOf(Owner::class, $attachedOwner);
-        static::assertTrue($attachedOwner->getId()->equals($owner->getId()));
+        static::assertTrue($this->safelyGetId($attachedOwner)->equals($owner->getId()));
     }
 
     /**
@@ -594,7 +609,7 @@ class PatientServiceTest extends TestCase
         $patient = $this->patient3;
 
         $attachPatientToOwnerDTO = new AttachPatientToOwnerDTO();
-        $attachPatientToOwnerDTO->patientId = $patient->getId()->getValue();
+        $attachPatientToOwnerDTO->patientId = $this->safelyGetId($patient)->getValue();
         $attachPatientToOwnerDTO->ownerId = 234;
 
         $patientService->attachPatientToOwner($attachPatientToOwnerDTO);
@@ -613,7 +628,7 @@ class PatientServiceTest extends TestCase
 
         $attachPatientToOwnerDTO = new AttachPatientToOwnerDTO();
         $attachPatientToOwnerDTO->patientId = 564;
-        $attachPatientToOwnerDTO->ownerId = $owner->getId()->getValue();
+        $attachPatientToOwnerDTO->ownerId = $this->safelyGetId($owner)->getValue();
 
         $patientService->attachPatientToOwner($attachPatientToOwnerDTO);
     }

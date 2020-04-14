@@ -78,8 +78,10 @@ class ApiControllerTest extends WebTestCase
         $container->set(IPatientRepository::class, $patientRepo);
         /** @var KernelBrowser */
         $client = $container->get("test.client");
+        $patientId = $patient->getId();
+        if (empty($patientId)) return;
         $client->request(Request::METHOD_GET, "/api/patients/state", [
-            "patientId" => $patient->getId()->getValue()
+            "patientId" => $patientId->getValue()
         ]);
         $psr = new PatientStateSuccessResponse($patient);
         $this->assertEquals($psr->getStatusCode(), $client->getResponse()->getStatusCode());

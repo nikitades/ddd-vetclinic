@@ -17,9 +17,10 @@ class InterceptableSymfonyStyle extends SymfonyStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $messages
+     * @param int $type
      */
-    public function writeln($messages, int $type = self::OUTPUT_RAW)
+    public function writeln($messages, int $type = self::OUTPUT_RAW): void
     {
         if (!is_iterable($messages)) {
             $messages = [$messages];
@@ -33,7 +34,7 @@ class InterceptableSymfonyStyle extends SymfonyStyle
     /**
      * {@inheritdoc}
      */
-    public function newLine(int $count = 1)
+    public function newLine(int $count = 1): void
     {
         parent::newLine($count);
         $this->bufferedOutput->write(str_repeat("\n", $count));

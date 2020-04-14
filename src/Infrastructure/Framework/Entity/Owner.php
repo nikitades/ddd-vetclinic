@@ -2,14 +2,16 @@
 
 namespace App\Infrastructure\Framework\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use App\Infrastructure\Framework\Entity\Patient;
 use DateTimeInterface;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
+use App\Infrastructure\Framework\Entity\Patient;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass="App\Infrastructure\Framework\Repository\OwnerRepository")
+ * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class Owner
 {
@@ -42,7 +44,7 @@ class Owner
 
     /**
      * @var Collection<mixed,Patient>|Patient[]
-     * @ORM\OneToMany(targetEntity="App\Infrastructure\Framework\Entity\Patient", mappedBy="owner")
+     * @ORM\OneToMany(targetEntity="App\Infrastructure\Framework\Entity\Patient", mappedBy="owner", fetch="EAGER")
      */
     private Collection $patients;
 

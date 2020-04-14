@@ -2,39 +2,20 @@
 
 namespace App\Test\Infrastructure\Framework\Controller;
 
-use DateTime;
+use App\Test\EntityGenerator;
 use InvalidArgumentException;
-use App\Domain\Patient\Entity\Card;
-use App\Domain\Patient\Entity\Owner;
-use App\Domain\Patient\Entity\Patient;
-use App\Domain\Patient\Entity\MedicalCase;
-use App\Domain\Patient\ValueObject\CardId;
-use App\Domain\Patient\ValueObject\OwnerId;
-use App\Domain\Patient\ValueObject\OwnerName;
-use App\Domain\Patient\ValueObject\PatientId;
 use Symfony\Component\HttpFoundation\Request;
 use App\Domain\Patient\ValueObject\OwnerEmail;
-use App\Domain\Patient\ValueObject\OwnerPhone;
 use App\Application\Patient\IPatientRepository;
-use App\Domain\Patient\ValueObject\PatientName;
-use App\Domain\Patient\ValueObject\OwnerAddress;
-use App\Domain\Patient\ValueObject\MedicalCaseId;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use App\Domain\Patient\ValueObject\PatientSpecies;
-use App\Domain\Patient\ValueObject\PatientBirthDate;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use App\Domain\Patient\ValueObject\OwnerRegisteredAt;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use App\Domain\Patient\ValueObject\MedicalCaseTreatment;
-use App\Domain\Patient\ValueObject\MedicalCaseDescription;
 use App\Application\Patient\Exception\OwnerNotFoundException;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use App\Infrastructure\Framework\ApiResponse\CreateOwnerFailedResponse;
 use App\Infrastructure\Framework\ApiResponse\CreateOwnerSuccessResponse;
 use App\Infrastructure\Framework\ApiResponse\CreatePatientSuccessResponse;
 use App\Infrastructure\Framework\ApiResponse\AddPatientToOwnerFailedResponse;
 use App\Infrastructure\Framework\ApiResponse\AddPatientToOwnerSuccessResponse;
-use App\Test\EntityGenerator;
 
 class AdminApiControllerTest extends WebTestCase
 {
@@ -175,7 +156,9 @@ class AdminApiControllerTest extends WebTestCase
     public function testAttachPatientToOwner(): void
     {
         $patient = $this->createPatient();
-        $patientId = $patient->getId()->getValue();
+        $patientId = $patient->getId();
+        if (empty($patientId)) return;
+        $patientId = $patientId->getValue();
         $owner = $patient->getOwner();
         if (empty($owner)) return;
         $container = $this->getContainer();
@@ -191,8 +174,11 @@ class AdminApiControllerTest extends WebTestCase
 
         /** @var KernelBrowser */
         $client = $container->get("test.client");
-        $client->request(Request::METHOD_PUT, "/api/admin/patients/$patientId/addToOwner", [
-            'ownerId' => $owner->getId()->getValue()
+        $ownerId = $owner->getId();
+        $this->assertNotEmpty($ownerId);
+        if (empty($ownerId)) return;
+        $client->request(Request::METHOD_PUT, "/api/admin/patients/$patientId/attachToOwner", [
+            'ownerId' => $ownerId->getValue()
         ]);
 
         $aptosr = new AddPatientToOwnerSuccessResponse($patient, $owner);
@@ -203,7 +189,9 @@ class AdminApiControllerTest extends WebTestCase
     public function testAttachPatientToOwnerWithNotExistingOwner(): void
     {
         $patient = $this->createPatient();
-        $patientId = $patient->getId()->getValue();
+        $patientId = $patient->getId();
+        if (empty($patientId)) return;
+        $patientId = $patientId->getValue();
         $container = $this->getContainer();
 
         $patientRepo = $this->createMock(IPatientRepository::class);
@@ -214,7 +202,7 @@ class AdminApiControllerTest extends WebTestCase
 
         /** @var KernelBrowser */
         $client = $container->get("test.client");
-        $client->request(Request::METHOD_PUT, "/api/admin/patients/$patientId/addToOwner", [
+        $client->request(Request::METHOD_PUT, "/api/admin/patients/$patientId/attachToOwner", [
             'ownerId' => 4538
         ]);
 

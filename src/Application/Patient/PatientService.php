@@ -37,6 +37,7 @@ use App\Application\Patient\Exception\OwnerNotFoundException;
 use App\Application\Patient\Exception\PatientNotFoundException;
 use App\Application\Patient\DTO\RemoveMedicalCaseFromPatientDTO;
 use App\Application\Patient\Exception\NoActivePatientCardsFoundException;
+use InvalidArgumentException;
 
 class PatientService
 {
@@ -213,7 +214,11 @@ class PatientService
          */
         $cases = $card->getCases();
         foreach ($cases as $case) {
-            if ($case->getId()->getValue() == $closeMedicalCaseDTO->medicalCaseId) {
+            $caseId = $case->getId();
+            if (empty($caseId)) {
+                throw new InvalidArgumentException("Empty case ID");
+            }
+            if ($caseId->getValue() == $closeMedicalCaseDTO->medicalCaseId) {
                 $case->end();
             }
         }
@@ -230,7 +235,9 @@ class PatientService
         );
         $owner = $patient->getOwner();
         if (empty($owner)) {
-            throw new OwnerNotFoundException("of patient " . $patient->getId()->getValue());
+            $patientId = $patient->getId();
+            $exceptionId = $patientId ? $patientId->getValue() : "(null)";
+            throw new OwnerNotFoundException("of patient " . $exceptionId);
         }
         $owner->enableNotification();
         $this->patientRepo->updateOwner($owner);
@@ -250,7 +257,7 @@ class PatientService
         if (empty($owner)) {
             throw new OwnerNotFoundException((string) $attachPatientToOwnerDTO->ownerId);
         }
-
+        
         $patient->setOwner($owner);
         $this->patientRepo->updatePatient($patient);
 

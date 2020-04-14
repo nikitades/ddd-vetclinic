@@ -66,7 +66,10 @@ class OwnerTest extends TestCase
         static::assertEmpty($owner->getPatients());
         $patient = $this->createPatient($owner);
         static::assertCount(1, $owner->getPatients());
-        $owner->removePatient($patient->getId());
+        $patientId = $patient->getId();
+        static::assertNotEmpty($patientId);
+        if (empty($patientId)) return;
+        $owner->removePatient($patientId);
         static::assertEmpty($owner->getPatients());
     }
 

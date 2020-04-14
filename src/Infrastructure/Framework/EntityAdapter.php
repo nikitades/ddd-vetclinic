@@ -7,6 +7,7 @@ use App\Infrastructure\IEntityAdapter;
 use App\Domain\Patient\ValueObject\CardId;
 use App\Domain\Patient\ValueObject\OwnerId;
 use App\Domain\Patient\ValueObject\OwnerName;
+use App\Domain\Patient\ValueObject\PatientId;
 use App\Domain\Patient\ValueObject\OwnerEmail;
 use App\Domain\Patient\ValueObject\OwnerPhone;
 use App\Domain\Patient\ValueObject\PatientName;
@@ -32,62 +33,103 @@ use App\Infrastructure\Framework\Entity\MedicalCase as DBALMedicalCase;
 
 class EntityAdapter implements IEntityAdapter
 {
-    public function fromDomainCard(DomainCard $domainCard): DBALCard
+    public function fromDomainCard(DomainCard $domainCard, bool $withCases = true): DBALCard
     {
         $domainCard = new DomainCard();
         $dbalCard = new DBALCard();
-        $dbalCard->setId($domainCard->getId()->getValue());
+        $cardId = $domainCard->getId();
+        if (!empty($cardId)) {
+            $dbalCard->setId($cardId->getValue());
+        }
         $dbalCard->setCreatedAt($domainCard->getCreatedAt()->getValue());
-        $dbalCard->setPatient($this->fromDomainPatient($domainCard->getPatient()));
-        $dbalCard->setCases(new ArrayCollection(array_map(
-            fn ($domainMedicalCase) => $this->fromDomainMedicalCase($domainMedicalCase),
-            $domainCard->getCases()
-        )));
+        $patient = $domainCard->getPatient();
+        if (!empty($patient)) {
+            $dbalCard->setPatient($this->fromDomainPatient($patient, false));
+            $patientId = $patient->getId();
+            if (!empty($patientId)) {
+                $dbalCard->setPatientId($patientId->getValue());
+            }
+        }
+        if ($withCases) {
+            $dbalCard->setCases(new ArrayCollection(array_map(
+                fn ($domainMedicalCase) => $this->fromDomainMedicalCase($domainMedicalCase),
+                $domainCard->getCases()
+            )));
+        }
         return $dbalCard;
     }
 
     public function fromDomainMedicalCase(DomainMedicalCase $domainMedicalCase): DBALMedicalCase
     {
         $dbalMedicalCase = new DBALMedicalCase();
-        $dbalMedicalCase->setId($domainMedicalCase->getId()->getValue());
+        $dmcId = $domainMedicalCase->getId();
+        if (!empty($dmcId)) {
+            $dbalMedicalCase->setId($dmcId->getValue());
+        }
         $dbalMedicalCase->setDescription($domainMedicalCase->getDescription()->getValue());
         $dbalMedicalCase->setTreatment($domainMedicalCase->getTreatment()->getValue());
         $dbalMedicalCase->setStartedAt($domainMedicalCase->getStartedAt()->getValue());
         $endedAt = $domainMedicalCase->getEndedAt();
         if (!empty($endedAt)) $dbalMedicalCase->setEndedAt($endedAt->getValue());
         $dbalMedicalCase->setEnded($domainMedicalCase->isEnded()->getValue());
-        $dbalMedicalCase->setCard($this->fromDomainCard($domainMedicalCase->getCard()));
+        $card = $domainMedicalCase->getCard();
+        if (!empty($card)) {
+            $dbalMedicalCase->setCard($this->fromDomainCard($card));
+            $cardId = $card->getId();
+            if (!empty($cardId)) {
+                $dbalMedicalCase->setCardId($cardId->getValue());
+            }
+        }
         return $dbalMedicalCase;
     }
 
-    public function fromDomainOwner(DomainOwner $domainOwner): DBALOwner
+    public function fromDomainOwner(DomainOwner $domainOwner, bool $withPatients = true): DBALOwner
     {
         $dbalOwner = new DBALOwner();
-        $dbalOwner->setId($domainOwner->getId()->getValue());
+        $doId = $domainOwner->getId();
+        if (!empty($doId)) {
+            $dbalOwner->setId($doId->getValue());
+        }
         $dbalOwner->setName($domainOwner->getName()->getValue());
         $dbalOwner->setPhone($domainOwner->getPhone()->getValue());
         $dbalOwner->setAddress($domainOwner->getAddress()->getValue());
         $dbalOwner->setEmail($domainOwner->getEmail()->getValue());
         $dbalOwner->setRegisteredAt($domainOwner->getRegisteredAt()->getValue());
-        $dbalOwner->setPatients(new ArrayCollection(array_map(
-            fn ($domainPatient) => $this->fromDomainPatient($domainPatient),
-            $domainOwner->getPatients()
-        )));
+        $dbalOwner->setNotificationRequired($domainOwner->getNotificationRequired()->getValue());
+        if ($withPatients) {
+            $dbalOwner->setPatients(new ArrayCollection(array_map(
+                fn ($domainPatient) => $this->fromDomainPatient($domainPatient),
+                $domainOwner->getPatients()
+            )));
+        }
         return $dbalOwner;
     }
 
-    public function fromDomainPatient(DomainPatient $patient): DBALPatient
+    public function fromDomainPatient(DomainPatient $patient, bool $withCards = true): DBALPatient
     {
         $dbalPatient = new DBALPatient();
-        $dbalPatient->setId($patient->getId()->getValue());
+        $patientId = $patient->getId();
+
+        if (!empty($patientId)) {
+            $dbalPatient->setId($patientId->getValue());
+        }
         $dbalPatient->setName($patient->getName()->getValue());
         $dbalPatient->setSpecies($patient->getSpecies()->getValue());
         $dbalPatient->setBirthDate($patient->getBirthDate()->getValue());
-        $dbalPatient->setOwner($this->fromDomainOwner($this->halt($patient->getOwner())));
-        $dbalPatient->setCards(new ArrayCollection(array_map(
-            fn ($domainCard) => $this->fromDomainCard($domainCard),
-            $patient->getCards()
-        )));
+        $owner = $patient->getOwner();
+        if (!empty($owner)) {
+            $dbalPatient->setOwner($this->fromDomainOwner($owner, false));
+            $ownerId = $owner->getId();
+            if (!empty($ownerId)) {
+                $dbalPatient->setOwnerId($ownerId->getValue());
+            }
+        }
+        if ($withCards) {
+            $dbalPatient->setCards(new ArrayCollection(array_map(
+                fn ($domainCard) => $this->fromDomainCard($domainCard),
+                $patient->getCards()
+            )));
+        }
         return $dbalPatient;
     }
 
@@ -141,8 +183,11 @@ class EntityAdapter implements IEntityAdapter
             new PatientBirthDate($this->halt($dbalPatient->getBirthDate())),
             new PatientSpecies($this->halt($dbalPatient->getSpecies()))
         );
-        $domainPatient->setId($this->halt($dbalPatient->getId()));
-        $domainPatient->setOwner($this->fromDBALOwner($this->halt($dbalPatient->getOwner())));
+        $domainPatient->setId(new PatientId($this->halt($dbalPatient->getId())));
+        $owner = $dbalPatient->getOwner();
+        if (!empty($owner)) {
+            $domainPatient->setOwner($this->fromDBALOwner($owner));
+        }
         $domainPatient->setCards(array_map(
             fn ($dbalCard) => $this->fromDBALCard($dbalCard),
             $dbalPatient->getCards()->toArray()

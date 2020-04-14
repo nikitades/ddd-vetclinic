@@ -92,7 +92,7 @@ The concepts:
     Admin: 
     V   - POST /patients
     V   - POST /owners
-    V   - PUT /patients/:id/attachOwner
+    V   - PUT /patients/:id/attachToOwner
         - PUT /patients/released
         - GET /patients/onTreatment
         - POST /patients/:id/cards/:cardId -> createMedicalCase

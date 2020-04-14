@@ -20,7 +20,7 @@ class MedicalCase
         $this->ended = new MedicalCaseEnded(false);
     }
 
-    protected MedicalCaseId $id;
+    protected ?MedicalCaseId $id;
     protected MedicalCaseDescription $description;
     protected MedicalCaseTreatment $treatment;
     protected Card $card;
@@ -28,7 +28,7 @@ class MedicalCase
     protected MedicalCaseEnded $ended;
     protected ?MedicalCaseEndedAt $endedAt = null;
 
-    public function getId(): MedicalCaseId
+    public function getId(): ?MedicalCaseId
     {
         return $this->id;
     }

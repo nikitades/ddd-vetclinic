@@ -4,9 +4,11 @@ namespace App\Infrastructure\Framework\Entity;
 
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 
 /**
  * @ORM\Entity(repositoryClass="App\Infrastructure\Framework\Repository\MedicalCaseRepository")
+ * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class MedicalCase
 {
@@ -47,6 +49,11 @@ class MedicalCase
      * @ORM\JoinColumn(nullable=false)
      */
     private ?Card $card;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private ?int $cardId;
 
     public function getId(): ?int
     {
@@ -128,6 +135,18 @@ class MedicalCase
     public function setCard(?Card $card): self
     {
         $this->card = $card;
+
+        return $this;
+    }
+
+    public function getCardId(): ?int
+    {
+        return $this->cardId;
+    }
+
+    public function setCardId(int $cardId): self
+    {
+        $this->cardId = $cardId;
 
         return $this;
     }

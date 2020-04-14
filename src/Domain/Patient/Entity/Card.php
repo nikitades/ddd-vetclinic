@@ -18,7 +18,7 @@ class Card
         $this->createdAt = CardCreatedAt::now();
     }
 
-    protected CardId $id;
+    protected ?CardId $id;
     protected CardClosed $closed;
     protected Patient $patient;
     /**
@@ -27,7 +27,7 @@ class Card
     protected array $cases = [];
     protected CardCreatedAt $createdAt;
 
-    public function getId(): CardId
+    public function getId(): ?CardId
     {
         return $this->id;
     }

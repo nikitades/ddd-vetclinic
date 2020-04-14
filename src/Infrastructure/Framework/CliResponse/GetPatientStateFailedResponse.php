@@ -15,6 +15,7 @@ class GetPatientStateFailedResponse extends AbstractCliResponse
      */
     public function __construct(SymfonyStyle $style, $id)
     {
+        $this->id = $id;
         parent::__construct($style);
     }
 

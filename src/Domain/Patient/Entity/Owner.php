@@ -25,7 +25,7 @@ class Owner
         $this->registeredAt = new OwnerRegisteredAt(new DateTime());
     }
 
-    protected OwnerId $id;
+    protected ?OwnerId $id = null;
     protected OwnerName $name;
     protected OwnerPhone $phone;
     protected OwnerAddress $address;
@@ -35,7 +35,7 @@ class Owner
     protected OwnerRegisteredAt $registeredAt;
     protected OwnerNotificationRequired $notificationRequired;
 
-    public function getId(): OwnerId
+    public function getId(): ?OwnerId
     {
         return $this->id;
     }

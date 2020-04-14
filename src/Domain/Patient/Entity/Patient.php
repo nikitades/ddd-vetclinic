@@ -21,17 +21,17 @@ class Patient
         $this->species = $species;
     }
 
-    protected PatientId $id;
+    protected ?PatientId $id = null;
     protected PatientName $name;
     protected PatientBirthDate $birthDate;
     protected PatientSpecies $species;
-    protected ?Owner $owner;
+    protected ?Owner $owner = null;
     /**
      * @var Card[]
      */
     protected array $cards = [];
 
-    public function getId(): PatientId
+    public function getId(): ?PatientId
     {
         return $this->id;
     }

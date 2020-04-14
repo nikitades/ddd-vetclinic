@@ -37,8 +37,10 @@ class GetPatientStateTest extends KernelTestCase
 
         $command = $application->find(GetPatientStateCommand::getDefaultName());
         $commandTester = new CommandTester($command);
+        $patientId = $patient->getId();
+        if (empty($patientId)) return;
         $commandTester->execute([
-            'id' => $patient->getId()->getValue()
+            'id' => $patientId->getValue()
         ]);
 
         $input = new ArgvInput();
@@ -101,7 +103,7 @@ class GetPatientStateTest extends KernelTestCase
         $output = new ConsoleOutput();
         $io = new SymfonyStyle($input, $output);
 
-        $expectedOutput = (new GetPatientStateFailedResponse($io, $patient, true))->getResponse();
+        $expectedOutput = (new GetPatientStateFailedResponse($io, $patient->getName()->getValue()))->getResponse();
         $realOutput = $commandTester->getDisplay();
         $this->assertEquals($expectedOutput, $realOutput);
     }

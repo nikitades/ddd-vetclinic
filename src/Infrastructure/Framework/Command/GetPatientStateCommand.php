@@ -37,6 +37,8 @@ class GetPatientStateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+
+        /** @var int|string */
         $id = $input->getArgument('id');
 
         if (is_int($id)) {
@@ -62,7 +64,7 @@ class GetPatientStateCommand extends Command
         return 127;
     }
 
-    private function result(SymfonyStyle $style, Patient $patient, $byId = true)
+    private function result(SymfonyStyle $style, Patient $patient, bool $byId = true): void
     {
         (new GetPatientStateSuccessResponse($style, $patient, $byId))->makeResponse();
     }
